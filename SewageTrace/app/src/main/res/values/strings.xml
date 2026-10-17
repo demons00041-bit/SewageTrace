@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name" translatable="false">SewageTrace</string>
+    <string name="app_title">SewageTrace</string>
+    <string name="app_tagline">Photograph sewage, classify its severity, report it, and track the clean-up.</string>
+
+    <!-- Auth -->
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="phone">Phone number</string>
+    <string name="password">Password</string>
+    <string name="agree_terms">I have read and accept the notice and privacy policy</string>
+    <string name="failed_login">Sign-in failed</string>
+    <string name="failed_register">Registration failed</string>
+    <string name="must_agree">Please accept the notice before continuing</string>
+    <string name="retype_password">Confirm password</string>
+    <string name="display_name">Nickname</string>
+    <string name="password_mismatch">The two passwords do not match</string>
+    <string name="password_too_short">Password must be at least 6 characters</string>
+    <string name="demo_login">Continue with demo account “River Patrol Aunty”</string>
+    <string name="about_app">About this app</string>
+    <string name="disclaimer_title">This app is a reporting and visualisation tool.</string>
+    <string name="disclaimer_body">A photo-based pollution index describes visible river conditions only. It cannot replace a laboratory water test, does not establish compliance with an effluent standard, and is not a substitute for the official complaint channel.
+
+Automatic reports create a record in this system; routing and handling times are indicative. The treatment conclusion is always the authority’s.</string>
+    <string name="disclaimer_short">Indicative only · not a legal water test</string>
+
+    <!-- Tabs -->
+    <string name="tab_detect">Report</string>
+    <string name="tab_map">Map</string>
+    <string name="tab_feedback">Community</string>
+    <string name="tab_profile">Me</string>
+
+    <!-- Detect -->
+    <string name="take_photo">Take photo</string>
+    <string name="pick_photo">Choose from gallery</string>
+    <string name="analyzing">Analysing…</string>
+    <string name="analyze">Analyse photo</string>
+    <string name="reanalyze">Re-analyse</string>
+    <string name="post_report">Report to authority</string>
+    <string name="report_saved">Saved locally</string>
+    <string name="pollution_index">Pollution index</string>
+    <string name="grade">Severity</string>
+    <string name="confidence">Confidence</string>
+    <string name="suspected_type">Suspected source</string>
+    <string name="evidence">Visual evidence</string>
+    <string name="evidence_breakdown">Evidence breakdown</string>
+    <string name="engine_on_device">On-device engine</string>
+    <string name="engine_cloud">Cloud AI</string>
+    <string name="engine_cloud_model">Cloud AI · deepseek-flash</string>
+    <string name="engine_offline_note">Offline — analysed with the on-device engine.</string>
+    <string name="engine_cloud_note">Analysed with DeepSeek vision.</string>
+    <string name="detect_hint_title">Point at the water, not the sky</string>
+    <string name="detect_hint_body">Include a bank, pipe or object for scale, keep the sun behind you, and fill the frame with the water surface.</string>
+    <string name="not_run">Photo not analysed yet</string>
+
+    <!-- Grade names -->
+    <string name="grade_r0">No obvious pollution</string>
+    <string name="grade_r1">Slight</string>
+    <string name="grade_r2">Moderate</string>
+    <string name="grade_r3">Heavy</string>
+    <string name="grade_r4">Severe</string>
+    <string name="grade_r0_advice">No obvious pollution. Keep an eye on the stream and report again if it changes.</string>
+    <string name="grade_r1_advice">Slight signs of pollution. Saved as a record; it is not escalated on its own.</string>
+    <string name="grade_r2_advice">Moderate pollution. This will be filed with the local authority for review.</string>
+    <string name="grade_r3_advice">Heavy pollution. Filed with the authority and flagged for survey.</string>
+    <string name="grade_r4_advice">Severe pollution. Filed immediately and flagged as high priority. If there is an active discharge, call the national hotline as well.</string>
+
+    <!-- Confidence -->
+    <string name="conf_high">High</string>
+    <string name="conf_medium">Medium</string>
+    <string name="conf_low">Low</string>
+    <string name="conf_high_desc">Clear water surface, good light, a bank or object for scale.</string>
+    <string name="conf_medium_desc">Usable, but distance, glare or a close framing limit the read.</string>
+    <string name="conf_low_desc">Not enough information or the shot is obstructed. Treat the result as indicative only.</string>
+
+    <!-- Blocked -->
+    <string name="blocked_title">Not filed</string>
+    <string name="blocked_low_conf">Confidence is low, so the report was not filed, to avoid a false alarm. It has been kept as a local record. Please retake the photo with a bank reference, good light and the water surface clearly in frame.</string>
+    <string name="blocked_not_water">The photo does not look like a water body. Please retake it aimed at the water surface.</string>
+    <string name="blocked_low_grade">No obvious pollution was found, so nothing was filed. The photo is kept in your history.</string>
+    <string name="blocked_offline_queue">You are offline. The report is queued and will be sent automatically once you are back online.</string>
+
+    <!-- Report flow -->
+    <string name="report_filed">Report filed</string>
+    <string name="ticket_number">Ticket</string>
+    <string name="assigned_to">Assigned to</string>
+    <string name="location">Location</string>
+    <string name="unknown_location">Location unavailable</string>
+    <string name="view_progress">View progress</string>
+    <string name="done">Done</string>
+
+    <!-- Progress -->
+    <string name="progress_title">Treatment progress</string>
+    <string name="stage_log">Task log</string>
+    <string name="no_log_yet">No updates yet.</string>
+    <string name="percent_treated">treated</string>
+    <string name="stage_1">Filed</string>
+    <string name="stage_2">Authenticity check</string>
+    <string name="stage_3">Assigned</string>
+    <string name="stage_4">On-site survey</string>
+    <string name="stage_5">Plan approved</string>
+    <string name="stage_6">Works in progress</string>
+    <string name="stage_7">Re-testing</string>
+    <string name="stage_8">Closed</string>
+    <string name="escalated">Escalated</string>
+    <string name="escalation_note">Three or more independent reports within 1 km in 72 hours</string>
+
+    <!-- Map -->
+    <string name="filter_all">All</string>
+    <string name="filter_gov">Government</string>
+    <string name="filter_lab">Testing</string>
+    <string name="filter_plant">Treatment works</string>
+    <string name="filter_monitor">Monitoring</string>
+    <string name="map_offline">Basemap unavailable — showing schematic map.</string>
+    <string name="map_attribution">© OpenStreetMap contributors</string>
+    <string name="map_legend">Legend</string>
+    <string name="nearby">Nearby</string>
+    <string name="distance_m">%1$d m</string>
+    <string name="distance_km">%1$.1f km</string>
+    <string name="book_test">Book a water test</string>
+    <string name="agency_type_gov">Government environment office</string>
+    <string name="agency_type_lab">Water testing laboratory</string>
+    <string name="agency_type_plant">Sewage treatment works</string>
+    <string name="agency_type_monitor">Water quality monitoring station</string>
+    <string name="accreditation_note">Demonstration data. Agency names are fictional and accreditation shown is illustrative.</string>
+
+    <!-- Booking -->
+    <string name="booking_title">Book a water test</string>
+    <string name="booking_slot">Time slot</string>
+    <string name="booking_items">Test items</string>
+    <string name="booking_fee">Fee</string>
+    <string name="booking_fee_value">Quoted on site</string>
+    <string name="booking_materials">Bring</string>
+    <string name="booking_materials_value">500 mL sample in a clean bottle, plus photo and location</string>
+    <string name="booking_confirm">Confirm booking</string>
+    <string name="booking_created">Booking confirmed</string>
+    <string name="booking_number">Booking number</string>
+    <string name="booking_cancel">Cancel</string>
+    <string name="booking_reschedule">Reschedule</string>
+    <string name="booking_cancelled">Booking cancelled</string>
+    <string name="booking_rescheduled">Booking rescheduled</string>
+    <string name="booking_none">No bookings yet</string>
+    <string name="booking_status_booked">Booked</string>
+    <string name="booking_status_cancelled">Cancelled</string>
+    <string name="booking_status_done">Report issued</string>
+    <string name="report_ready">Test report available</string>
+    <string name="report_match">Matches your photo assessment</string>
+    <string name="report_mismatch">Differs from your photo assessment</string>
+
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">Leaderboard</string>
+    <string name="leaderboard_city">City</string>
+    <string name="leaderboard_country">National</string>
+    <string name="leaderboard_hidden">Fewer than 5 active reporters in this city, so the city board is hidden to protect identities.</string>
+    <string name="leaderboard_metric">Valid finds</string>
+    <string name="leaderboard_you">You</string>
+    <string name="leaderboard_rank">#%1$d</string>
+    <string name="leaderboard_newcomer">Under 5 reports — not ranked yet</string>
+    <string name="leaderboard_rules">Only valid, de-duplicated reports count. Anonymous reports are not ranked.</string>
+
+    <!-- Feedback -->
+    <string name="feedback_title">Task feedback</string>
+    <string name="my_reports">Submitted</string>
+    <string name="in_progress">In progress</string>
+    <string name="closed">Closed</string>
+    <string name="avg_response">Avg. response</string>
+    <string name="hours">%1$.1f h</string>
+    <string name="feed_title">All ticket activity</string>
+    <string name="confirm_treated">Confirm it has been treated</string>
+    <string name="dispute_treated">Dispute</string>
+    <string name="confirmed_thanks">Thanks — your confirmation has been recorded.</string>
+    <string name="disputed_thanks">Dispute filed. The case will be re-inspected.</string>
+    <string name="authority_on_time">On-time rate</string>
+    <string name="authority_transparency">Transparency</string>
+
+    <!-- Profile / settings -->
+    <string name="my_finds">Valid finds</string>
+    <string name="open_cases">Open</string>
+    <string name="closed_cases">Closed</string>
+    <string name="avg_progress">Avg. progress</string>
+    <string name="my_reports_title">My reports</string>
+    <string name="my_bookings_title">My bookings</string>
+    <string name="settings">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_zh">中文</string>
+    <string name="settings_auto_report">Auto-file reports</string>
+    <string name="settings_auto_report_desc">File reports automatically when severity is moderate or above</string>
+    <string name="settings_anonymous">Stay anonymous on leaderboards</string>
+    <string name="settings_anonymous_desc">Your reports still count, but your name is hidden</string>
+    <string name="settings_location">Location precision</string>
+    <string name="settings_location_1000">Coarse — 1 km</string>
+    <string name="settings_location_500">Medium — 500 m</string>
+    <string name="settings_location_50">Precise — 50 m</string>
+    <string name="settings_ai_mode">Recognition engine</string>
+    <string name="settings_ai_mode_auto">Auto — cloud when online</string>
+    <string name="settings_ai_mode_local">On-device only</string>
+    <string name="settings_ai_mode_cloud">Cloud AI only</string>
+    <string name="settings_ai_key">DeepSeek API key</string>
+    <string name="settings_ai_key_hint">sk-…</string>
+    <string name="settings_ai_key_saved">Key saved on this device</string>
+    <string name="settings_ai_key_missing">No API key configured</string>
+    <string name="settings_ai_key_clear">Remove key</string>
+    <string name="settings_ai_key_privacy">The key is stored only on this device and is never sent anywhere except api.deepseek.com.</string>
+    <string name="settings_ai_model">Model</string>
+    <string name="settings_city">City</string>
+    <string name="settings_country">Country</string>
+    <string name="sign_out">Sign out</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_local_data">Delete local data</string>
+    <string name="delete_local_data_desc">Removes photos, reports and bookings stored on this device</string>
+
+    <!-- Suspected source -->
+    <string name="type_domestic">Untreated domestic discharge</string>
+    <string name="type_industrial">Industrial wastewater</string>
+    <string name="type_livestock">Farm / livestock runoff</string>
+    <string name="type_black_odorous">Black, odorous or green water</string>
+    <string name="type_dumping">Waste dumping</string>
+    <string name="type_construction">Construction silt</string>
+    <string name="type_oil">Oil or fuel film</string>
+    <string name="type_unknown">Unclear</string>
+
+    <!-- Evidence dimensions -->
+    <string name="dim_color">Colour and turbidity</string>
+    <string name="dim_floatables">Floating debris</string>
+    <string name="dim_foam_oil">Foam and oil film</string>
+    <string name="dim_state">Water surface and bank</string>
+    <string name="dim_eutro">Algal growth</string>
+    <string name="dim_quality">Photo quality</string>
+
+    <!-- Log text -->
+    <string name="log_submitted">Ticket opened and queued for pooling.</string>
+    <string name="log_pooled">Passed the photo authenticity and duplicate check (perceptual hash).</string>
+    <string name="log_dispatched">Dispatched to %1$s by administrative area.</string>
+    <string name="log_verified">An officer attended and confirmed the pollution on site; evidence photographed.</string>
+    <string name="log_filed">A clean-up plan and responsible unit have been agreed; added to this quarter’s programme.</string>
+    <string name="log_treating">Interception works and dredging started.</string>
+    <string name="log_treating_progress">Interception pipes are complete; dredging and ecological restoration are under way.</string>
+    <string name="log_treating_done">Main works complete; awaiting a re-test.</string>
+    <string name="log_retest">A third-party sampling re-test has been arranged.</string>
+    <string name="log_closed">Re-test shows improvement. Accepted and the ticket is closed.</string>
+    <string name="log_dispute">Reporter disagreed: %1$s. The ticket was returned to “%2$s” for a second inspection.</string>
+    <string name="log_urge">Progress is below 25% with no update for 7 days, so an automatic reminder was issued and copied to the supervising office.</string>
+    <string name="log_escalate">%1$d different users reported the same water body within 1 km in 72 hours. The ticket was escalated and dispatched with priority.</string>
+    <string name="role_platform">Platform</string>
+    <string name="role_authority">Authority</string>
+    <string name="role_operator">Works operator</string>
+    <string name="role_lab">Laboratory</string>
+    <string name="role_user">Reporter</string>
+
+    <!-- Badges -->
+    <string name="badge_guardian">River guardian</string>
+    <string name="badge_observer">River observer</string>
+    <string name="badge_driver">Clean-up driver</string>
+    <string name="badge_streak">7-day river patrol</string>
+
+    <!-- Sample evidence statements (translatable history) -->
+    <string name="ev_heavy_color">Water is deep black with greyish-white foam; a discharge pipe is visible on the bank.</string>
+    <string name="ev_moderate_color">Green algal film covers the surface, with dense persistent foam.</string>
+    <string name="ev_mild_color">Water is yellowish and turbid, with household debris collecting at the edge.</string>
+    <string name="ev_clean_color">Surface is clear; submerged structure and reflections are visible.</string>
+    <string name="ev_blurred">The frame is out of focus, so the surface cannot be read reliably.</string>
+    <string name="ev_night">Light is too low; the surface detail is unreliable.</string>
+    <string name="ev_screenshot">The image appears to be a photo of a screen.</string>
+    <string name="ev_demo_note">A persistent discharge enters the river at the bank.</string>
+
+    <!-- Standard references (illustrative only) -->
+    <string name="std_eqa">Environmental Quality Act 1974 · regulations shown for illustration</string>
+    <string name="std_drainage">Drainage and local-authority by-laws · illustrative</string>
+    <string name="std_sewage">Sewage works guidance · illustrative</string>
+    <string name="std_river">River water quality classification · illustrative</string>
+
+    <!-- On-device evidence notes -->
+    <string name="note_color_dark">Large parts of the water are black; light penetration is clearly reduced.</string>
+    <string name="note_color_green">The water is distinctly green, suggesting algal growth or stagnant sewage.</string>
+    <string name="note_color_murky">The water is turbid, with visible suspended solids and low clarity.</string>
+    <string name="note_float_many">Sheets of floating debris and household waste are clearly visible.</string>
+    <string name="note_float_some">Scattered floating objects are visible in places.</string>
+    <string name="note_foam">Persistent foam or a reflective oil film is visible on the surface.</string>
+    <string name="note_state">Wash marks on the bank; the water looks stagnant.</string>
+    <string name="note_eutro">A green algal film or bloom is forming on the surface.</string>
+    <string name="note_quality">Shot quality limits confidence in the result.</string>
+    <string name="note_clean">No clear abnormality in colour, floating matter or foam.</string>
+
+    <!-- Demo scenes -->
+    <string name="scene_heavy_title">Heavy · industrial black water</string>
+    <string name="scene_heavy_sub">A black discharge running from a pipe on the bank</string>
+    <string name="scene_heavy_note">Water is deep black with greyish-white foam; a discharge pipe is visible on the bank.</string>
+    <string name="scene_moderate_title">Moderate · algae and foam</string>
+    <string name="scene_moderate_sub">Green algae mats with persistent foam</string>
+    <string name="scene_moderate_note">Green algal film covers the surface, with dense persistent foam.</string>
+    <string name="scene_mild_title">Slight · turbid with debris</string>
+    <string name="scene_mild_sub">Yellowish, turbid water carrying litter</string>
+    <string name="scene_mild_note">Water is yellowish and turbid, with household debris collecting at the edge.</string>
+    <string name="scene_clean_title">No obvious pollution · clear surface</string>
+    <string name="scene_clean_sub">An ordinary urban river reach</string>
+    <string name="scene_clean_note">Surface is clear; submerged structure and reflections are visible.</string>
+    <string name="scene_blurred_title">Low confidence · out of focus</string>
+    <string name="scene_blurred_sub">A photo that failed to focus</string>
+    <string name="scene_screenshot_title">Low confidence · photo of a screen</string>
+    <string name="scene_screenshot_sub">Re-photographed from a display</string>
+    <string name="scene_night_title">Low confidence · shot at night</string>
+    <string name="scene_night_sub">Insufficient light on the water</string>
+
+    <!-- Mock capture -->
+    <string name="mock_camera">Demo capture</string>
+    <string name="mock_camera_note">The emulator has no real camera; this generates a synthetic photo with the selected visual features.</string>
+    <string name="gallery_note">Choosing from the gallery opens the system picker.</string>
+
+    <!-- Engine fallback notices -->
+    <string name="fallback_no_key">No DeepSeek key configured, so the on-device engine was used.</string>
+    <string name="fallback_no_network">No network, so the on-device engine was used.</string>
+    <string name="fallback_forced_local">Recognition engine is set to on-device only.</string>
+    <string name="fallback_cloud_failed">Cloud recognition failed (%1$s); the on-device engine was used instead.</string>
+
+    <!-- API key screen -->
+    <string name="settings_api_key">Cloud AI credential</string>
+    <string name="api_key_title">How the credential works</string>
+    <string name="api_key_body">Use a gateway token (st:…) issued by your own proxy gateway. The real model key never leaves the server, so unpacking the APK reveals nothing usable. Without a credential the app still works — every photo is analysed by the on-device engine.</string>
+    <string name="api_key_label">API key</string>
+    <string name="api_key_storage">Encrypted with an Android Keystore AES-GCM key before it touches disk, and sent only to the gateway you configure. This does not defend against a memory dump on a live device, but it does stop plain-text leaks through file copies, backups or adb.</string>
+    <string name="api_key_test">Connection test</string>
+    <string name="api_key_untested">Not tested yet.</string>
+    <string name="api_key_testing">Calling api.deepseek.com…</string>
+    <string name="api_key_ok">Key accepted.</string>
+    <string name="api_key_failed">Test failed.</string>
+    <string name="api_key_clear">Clear key</string>
+    <string name="api_key_usage">What gets sent</string>
+    <string name="api_key_usage_body">A downscaled copy of the photo (longest side 1280 px) plus a fixed instruction prompt. No account name, phone number or precise address is included. Every result screen shows whether the answer came from the on-device engine, the gateway or a direct call.</string>
+
+    <!-- Ticket log actors and texts -->
+    <string name="role_treatment_org">Treatment unit</string>
+    <string name="log_created">Ticket created and waiting to enter the review pool.</string>
+    <string name="log_treating_start">Interception works and dredging started.</string>
+    <string name="log_treating_mid">Interception pipes completed; dredging and ecological restoration under way.</string>
+    <string name="log_generic">Status updated.</string>
+    <string name="log_urged">Progress stayed below 25% with no new log for 7 days, so an automatic reminder was raised and copied to the supervising department.</string>
+    <string name="log_escalated">%1$d different users reported the same water body within 1 km in 72 hours, so the ticket was escalated and prioritised.</string>
+
+    <!-- Rank badges -->
+    <string name="badge_river_guardian">River Guardian</string>
+    <string name="badge_river_watcher">River Watcher</string>
+
+    <!-- Agency detail / booking -->
+    <string name="agency_address">Address</string>
+    <string name="agency_distance">Distance</string>
+    <string name="agency_phone">Phone</string>
+    <string name="agency_hours">Opening hours</string>
+    <string name="agency_standard">Reporting standard</string>
+    <string name="agency_demo_data">This entry is demonstration data and has not been verified by the authority. A production build must show the data source and the date it was last confirmed.</string>
+    <string name="agency_booking_title">Sample drop-off</string>
+    <string name="agency_accredited">Accredited lab (demo declaration)</string>
+    <string name="agency_tests">Test items</string>
+    <string name="agency_fee">Reference fee</string>
+    <string name="agency_quote">Quote on request</string>
+    <string name="agency_materials">What to bring</string>
+    <string name="agency_booking_note">A booking only reserves a slot. Fees and test items are confirmed by the lab on site. The lab issues the report and it is attached to your ticket for the visual-vs-measured comparison.</string>
+    <string name="agency_book_slot">Book a drop-off slot</string>
+    <string name="agency_gov_channel">Official complaint channels for water pollution remain the authority hotlines. A report filed here is a lead, not a statutory complaint, and does not open an enforcement case.</string>
+    <string name="booking_success">Booked</string>
+    <string name="booking_code">Booking code</string>
+    <string name="booking_agency">Lab</string>
+    <string name="booking_tests">Test items</string>
+    <string name="booking_reminder">Bring your sample (≥500 mL, kept cold) and an ID to the front desk and quote the booking code. You can cancel from Profile → My bookings up to 4 hours before the slot.</string>
+    <string name="booking_pick_date">Pick a date</string>
+    <string name="booking_pick_slot">Pick a slot</string>
+    <string name="booking_pick_tests">Test items</string>
+    <string name="booking_multi">Multiple allowed</string>
+    <string name="day_today">Today</string>
+    <string name="day_tomorrow">Tomorrow</string>
+    <string name="day_day_after">In 2 days</string>
+    <string name="day_next_mon">Next Monday</string>
+
+    <!-- Misc -->
+    <string name="offline">Offline</string>
+    <string name="permission_camera_denied">Camera permission denied — you can still choose a photo from the gallery.</string>
+    <string name="demo_notice">Demonstration build · data stays on this device</string>
+
+    <!-- Detail screens -->
+    <string name="not_found">Record not found</string>
+    <string name="report_detail">Report detail</string>
+    <string name="accuracy_short">accuracy %1$dm</string>
+    <string name="waterbody">Water body</string>
+    <string name="report_status">Report status</string>
+    <string name="confidence_label">Confidence</string>
+    <string name="extra_note">Additional note</string>
+    <string name="low_conf_note">Low-confidence records are not filed and do not count towards the leaderboard. Please retake the photo with a bank-side reference object in frame and avoid backlight or heavy glare.</string>
+    <string name="manual_submit">Submit this record manually</string>
+    <string name="linked_ticket">Linked ticket</string>
+    <string name="view_task_log">View treatment task log</string>
+    <string name="calibration_title">Visual result vs lab measurement</string>
+    <string name="calibration_desc">For quantitative data, book a sample drop-off from the Map tab. Once the lab fills in the report it appears here and joins the model calibration set.</string>
+    <string name="calibration_demo">(Demonstration values, not a real test result)</string>
+    <string name="ticket_title">Treatment task ticket</string>
+    <string name="created_at">Created</string>
+    <string name="sla_deadline">Committed deadline</string>
+    <string name="joint_reports">Joint reports</string>
+    <string name="people_count">%1$d people</string>
+    <string name="urged_label">Reminder</string>
+    <string name="urged_value">Auto-reminded (progress &lt;25% and no log for 7 days)</string>
+    <string name="overdue_tip">Overdue by %1$d day(s) — you may raise a dispute to request an explanation.</string>
+    <string name="stage_progress">Stage progress</string>
+    <string name="server_computed">Computed server-side; the client is read-only</string>
+    <string name="task_log">Task log</string>
+    <string name="entry_count">%1$d entries</string>
+    <string name="my_feedback">My feedback</string>
+    <string name="dispute_btn">Treated / dispute</string>
+    <string name="thank_btn">Confirm outcome</string>
+    <string name="thanked">Confirmed</string>
+    <string name="verify_title">Re-check with a fresh photo</string>
+    <string name="verify_sub">Local vision engine, no upload</string>
+    <string name="verify_desc">Take a new photo of the same spot to check whether the pollution is actually gone. The engine runs on this device; if the result clears the site the ticket is marked for closing.</string>
+    <string name="verify_btn">Open camera and re-check</string>
+    <string name="verify_running">Analysing…</string>
+    <string name="verify_result_cleared">Looks treated</string>
+    <string name="verify_result_pending">Still polluted</string>
+    <string name="verify_result_detail">Index %1$d · grade %2$s · confidence %3$d%%</string>
+    <string name="verify_result_engine">Engine: %1$s</string>
+    <string name="simulate_advance">Simulate next government stage (demo)</string>
+    <string name="dispute_dialog_title">Submit feedback</string>
+    <string name="dispute_dialog_desc">Describe what you actually see (for example "cleared already" or "only the litter was removed, the outfall was not checked"). The ticket returns to On-site verification and progress is recomputed from the new stage.</string>
+    <string name="dispute_hint">Your feedback (optional)</string>
+    <string name="dispute_default">On-site condition does not match the reported status</string>
+    <string name="submit">Submit</string>
+    <string name="standards_warning">Every limit value on this page is currently marked "to be verified". Before release each value must be taken from the source standard text and written into assets/standards.json together with the clause number and the applicable version.</string>
+    <string name="std_msma_desc">Malaysia\'s principal water pollution legislation; licence conditions and effluent limits for premises discharging into inland waters.</string>
+    <string name="std_inwqs_desc">Class I–V water quality classes and parameter limits used to judge what a receiving water body must meet.</string>
+    <string name="std_sewage_desc">Standard A and Standard B effluent limits for sewage and industrial effluent discharge.</string>
+    <string name="std_doe_desc">The authority that receives pollution reports and issues enforcement action in Malaysia.</string>
+    <string name="limit_pending">Limit to be verified</string>
+    <string name="why_no_ratio_title">Why doesn\'t the app report an "exceedance ratio"?</string>
+    <string name="why_no_ratio_desc">A photograph cannot measure dissolved oxygen, ammonia nitrogen or heavy metals, so any "exceedance ratio" derived from an image is pseudo-quantitative. This app only produces a visual anomaly index that is independent of any standard; a legally valid conclusion requires on-site sampling by an accredited laboratory.</string>
+    <string name="about_title">About &amp; privacy</string>
+    <string name="about_engine_line">Engine: %1$s</string>
+    <string name="data_handling_title">How your data is handled</string>
+    <string name="data_1">Detection runs on this device — photos and pixel data never leave the phone unless you enable cloud AI</string>
+    <string name="data_2">A report only uploads a compressed photo, capture time, location (accuracy can be reduced to 1 km) and the detection result</string>
+    <string name="data_3">Faces, plates and house numbers are blurred before upload</string>
+    <string name="data_4">Location accuracy can be downgraded; anonymous reports are excluded from the leaderboard</string>
+    <string name="data_5">You can delete all local records and account data at any time; the server keeps ticket records that it is required to retain</string>
+    <string name="logout_clear">Log out and clear session</string>
+
+    <!-- Detect screen -->
+    <string name="detect_result_title">Detection result</string>
+    <string name="detect_result_sub">Review the AI reading, then send it to the authority</string>
+    <string name="retake">Retake</string>
+    <string name="analyzing_steps">Colour &amp; turbidity · floatables · foam &amp; oil film · bank condition · eutrophication</string>
+    <string name="start_detect">Start detection</string>
+    <string name="report_params">Report settings</string>
+    <string name="auto_report_gov">Auto-report to the authority</string>
+    <string name="auto_report_gov_desc">Only R2 and above trigger a report; R0/R1 are kept as local drafts</string>
+    <string name="loc_precision">Location accuracy</string>
+    <string name="prec_1km">1 km (most private)</string>
+    <string name="prec_500m">500 m</string>
+    <string name="prec_50m">50 m (default)</string>
+    <string name="confirm_and_report">Confirm and auto-report</string>
+    <string name="confirm_save_local">Confirm and save locally only</string>
+    <string name="captured_frame">Captured frame</string>
+    <string name="scene_sample_tag">%1$s · sample shot</string>
+    <string name="watermark_hint">Watermark: time · location (accuracy %1$dm)</string>
+    <string name="index_explainer">Note: the index is a weighted score of how abnormal the scene looks. It is unrelated to any statutory limit and cannot be converted into a pollutant concentration.</string>
+    <string name="model_line">Model: %1$s</string>
+    <string name="outcome_escalated">Reported and escalated</string>
+    <string name="outcome_reported">Reported</string>
+    <string name="platform_pool">the platform pool</string>
+    <string name="outcome_reported_body">Ticket %1$s was created and dispatched to %2$s.</string>
+    <string name="outcome_escalated_tail"> Because three or more users reported the same water body within 72 hours, it was escalated automatically.</string>
+    <string name="outcome_blocked">Not filed</string>
+    <string name="outcome_draft">Saved as a local record</string>
+    <string name="outcome_failed">Submission rejected</string>
+    <string name="view_report_and_ticket">View report and ticket</string>
+    <string name="back_to_retake">Back to retake</string>
+    <string name="detect_idle_sub">Take a photo of the water surface — the AI assigns a pollution grade</string>
+    <string name="detect_cta">Detect</string>
+    <string name="detect_cta_sub">Tap to capture a sample frame\nPhotos stay on this device by default</string>
+    <string name="cloud_add_key">Cloud AI is not configured yet — add an API key</string>
+    <string name="pick_scene">Pick a capture scene</string>
+    <string name="pick_scene_sub">Demo only: simulates different water conditions</string>
+    <string name="did_you_know">Did you know</string>
+    <string name="did_you_know_body">Clear, colourless, odourless water can still carry heavy metals or pathogens — a normal appearance does not prove the water is safe. For quantitative data, book a sample drop-off from the Map tab.</string>
+    <string name="shoot_arrow">Capture ›</string>
+    <string name="engine_mode_local">Engine: on-device · offline</string>
+    <string name="engine_mode_cloud">Engine: cloud AI ready</string>
+    <string name="engine_mode_auto">Engine: auto (cloud, falls back on-device)</string>
+    <string name="engine_hint_cloud_ready">Detection sends a compressed photo to the configured cloud model and returns a graded result.</string>
+    <string name="engine_hint_cloud_missing">No API key configured — detection falls back to the on-device engine.</string>
+    <string name="engine_hint_local">Runs fully offline on this device. No pixel data leaves the phone.</string>
+    <string name="api_key_cleared">API key cleared — falling back to the on-device engine</string>
+    <string name="api_key_saved">API key saved</string>
+    <string name="evidence_title">Detection evidence</string>
+
+    <string name="hint_cloud_ready">Online · deepseek-flash</string>
+    <string name="hint_no_key">On-device engine · add an API key to use online AI</string>
+    <string name="hint_local_forced">On-device engine · online AI is turned off</string>
+    <string name="mode_auto">Auto</string>
+    <string name="mode_cloud">Online AI</string>
+    <string name="mode_local">On-device</string>
+
+    <string name="key_configured">Key configured</string>
+    <string name="key_missing">No key</string>
+    <string name="realname_demo">Demo user</string>
+
+    <string name="level_r4">Heavy</string>
+    <string name="level_r3">Moderate</string>
+    <string name="level_r2">Mild</string>
+    <string name="level_r1">Slight</string>
+    <string name="level_r0">No obvious pollution</string>
+
+    <string name="prec_1km_short">1 km</string>
+    <string name="prec_500m_short">500 m</string>
+    <string name="prec_50m_short">50 m</string>
+    <string name="loc_precision_note">A coarser accuracy hides your position from the map and the ticket.</string>
+    <string name="loc_precision_with">Position accuracy: %1$s</string>
+
+    <string name="progress_formula">The percentage is computed on the server from completed workflow stages; the client cannot change it.</string>
+
+    <string name="stat_valid">Valid findings</string>
+    <string name="stat_open">Open tickets</string>
+    <string name="stat_closed">Closed</string>
+    <string name="stat_avg">Avg. progress</string>
+
+    <string name="setting_language">Language</string>
+    <string name="setting_engine">Recognition engine</string>
+    <string name="setting_engine_desc">Auto uses the online model when a key is configured and the network is available, otherwise the on-device engine.</string>
+    <string name="setting_auto_report">Auto-report</string>
+    <string name="setting_auto_report_desc">When a photo scores R2 or above the lead is filed to the ticket pool automatically.</string>
+    <string name="setting_anon">Anonymous in leaderboards</string>
+    <string name="setting_anon_desc">Your nickname is replaced by you in public rankings.</string>
+
+    <string name="menu_standards">Standards referenced</string>
+    <string name="menu_standards_sub">What each grading level is compared against</string>
+    <string name="menu_privacy">Privacy &amp; data handling</string>
+    <string name="menu_privacy_sub">Photos, location and what leaves your phone</string>
+    <string name="menu_about">Disclaimer &amp; about</string>
+    <string name="menu_about_sub">What this app can and cannot do</string>
+    <string name="menu_api_key">API key</string>
+    <string name="menu_api_key_ok">Configured</string>
+    <string name="menu_api_key_none">Not configured</string>
+    <string name="logout">Sign out</string>
+
+    <string name="my_bookings">My sample-dropoff bookings</string>
+    <string name="no_bookings">No bookings yet</string>
+    <string name="no_reports">No reports yet</string>
+    <string name="no_reports_sub">Photograph a river or drain to create your first lead.</string>
+    <string name="cancel_booking">Cancel booking</string>
+    <string name="reschedule">Reschedule</string>
+    <string name="booking_code_line">Booking code %1$s</string>
+
+    <string name="about_standards">Environmental Quality Act 1974 (Malaysia) · INWQS (Water Quality Index) · MSMA Stormwater Manual · Indah Water effluent standards</string>
+        <string name="footer_demo">Demo build · all agencies and tickets are fictional</string>
+    <string name="filter_wwtp">Plant</string>
+    <string name="filter_station">Station</string>
+    <string name="legend_gov">Government agency</string>
+    <string name="legend_lab">Accredited lab</string>
+    <string name="legend_wwtp">Treatment works</string>
+    <string name="legend_station">Monitoring station</string>
+    <string name="legend_reports">Pollution reports</string>
+    <string name="map_hide_reports">Hide pollution pins</string>
+    <string name="map_show_reports">Show pollution pins</string>
+    <string name="map_basemap_note">Schematic basemap - the production build uses OpenStreetMap (c) OpenStreetMap contributors, ODbL</string>
+    <string name="map_nearby">Nearby authorities and labs</string>
+    <string name="map_sorted">Sorted by distance - %1$d places</string>
+    <string name="repstatus_draft">Draft</string>
+    <string name="repstatus_reported">Reported</string>
+    <string name="repstatus_rejected">Rejected</string>
+    <string name="repstatus_inticket">In ticket</string>
+    <string name="rank_page_title">Rankings &amp; Feedback</string>
+    <string name="rank_tab_board">Rankings</string>
+    <string name="rank_tab_feedback">Task feedback</string>
+    <string name="rank_city">City</string>
+    <string name="rank_nation">National</string>
+    <string name="rank_7d">7 days</string>
+    <string name="rank_30d">30 days</string>
+    <string name="rank_all">All time</string>
+    <string name="rank_rule_text">Ranking counts "valid findings": severity R2 or above, approved by review, and only once per water body per 24 hours. Anonymous reports, rejected reports and R0/R1 records do not score. Newcomers with fewer than 5 valid findings are kept off the board so their identity cannot be inferred.</string>
+    <string name="rank_empty_title">Fewer than 5 active users in this city</string>
+    <string name="rank_empty_sub">To protect privacy the city board stays hidden while activity is low, so nobody can infer another person\'s location or active hours from it.</string>
+    <string name="rank_footer">Counts refresh every 5 minutes. If a count looks wrong, raise an appeal under "Task feedback" below.</string>
+    <string name="rank_row_detail">%1$s · valid findings %2$d · tickets %3$d · closed %4$d</string>
+    <string name="feedback_my_progress">My ticket progress</string>
+    <string name="feedback_no_ticket">No open tickets yet. On the Detect tab, photograph a polluted water body; R2 and above becomes a ticket automatically.</string>
+    <string name="feedback_escalated">Escalated</string>
+    <string name="feedback_disputed">Disputes</string>
+    <string name="feedback_dynamic">Platform ticket feed</string>
+    <string name="feedback_dynamic_sub">All tickets · public fields only</string>
+    <string name="feedback_transparency">Platform transparency</string>
+    <string name="feedback_global">%1$d tickets · %2$d closed · average progress %3$d%% · %4$d escalated by corroboration</string>
+    <string name="feedback_progress_rule">The progress percentage is computed on the platform from published stage weights (dispatch 5% / verification 15% / filing 15% / works 50% / retest 10% / closure 5%) and cannot be edited by the client.</string>
+    <string name="feedback_actions">Send feedback</string>
+    <string name="fb_done_title">The government has treated it but the app still shows in progress</string>
+    <string name="fb_done_desc">File a dispute on any ticket; its progress rolls back to "Site verification" for a second check.</string>
+    <string name="fb_rejected_title">My pollution report was not accepted</string>
+    <string name="fb_rejected_desc">Check whether it is R0/R1, whether confidence was low, or whether the same spot was reported in the last 24 hours.</string>
+    <string name="fb_rank_title">The ranking count is wrong</string>
+    <string name="fb_rank_desc">Appeal your valid-finding count; it is reviewed by a human within 7 working days.</string>
+    <string name="fb_other_title">Other suggestions and issues</string>
+    <string name="fb_other_desc">Report real pollution through the official channel of your local authority; this app is not a statutory complaint channel.</string>
+    <string name="ticket_escalated_badge">Escalated</string>
+    <string name="phone_hint">Any 11 digits in this demo</string>
+    <string name="password_hint">Any text in this demo</string>
+    <string name="city_hint">City (sets your city board)</string>
+    <string name="nickname_hint">Nickname shown on the board; you can go anonymous anytime</string>
+    <string name="auth_agree_sub">Uploading photos and location is consent-based for pollution leads and can be withdrawn at any time.</string>
+    <string name="err_phone_length">Enter an 11-digit phone number</string>
+    <string name="err_no_password">Enter your password or code</string>
+    <string name="err_no_nickname">Enter a nickname</string>
+    <string name="register_and_login">Register and continue</string>
+    <string name="demo_note">Demo notes: photos stay on the device unless you enable cloud AI; the on-device engine is a rule-based classifier; government handling progress is simulated.</string>
+    <string name="disclaimer_law">This app is a photo-based tool for collecting and visualising pollution leads. It is not a laboratory test and is not an official complaint channel. Results are a visual lead score and must not be used as evidence of an offence; the authority decides whether pollution occurred and how it is handled.</string>
+    <string name="fallback_title">On-device engine used instead</string>
+    <string name="proxy_mode_title">Gateway mode</string>
+    <string name="proxy_mode_body">Token recognised (st: prefix). The model key stays on the gateway — this app never holds it, so a leaked APK reveals nothing worth stealing.</string>
+    <string name="direct_mode_title">Warning: direct key</string>
+    <string name="direct_mode_body">This looks like a raw provider key. It will be stored on this device and is exposed to anyone who can unpack the APK or root the phone. Use a gateway token for anything beyond local debugging.</string>
+    <string name="api_key_fields">Credential</string>
+    <string name="token_label">Device token</string>
+    <string name="gateway_label">Gateway URL</string>
+    <string name="cloud_model_label">Model</string>
+    <string name="rotate_token">Generate a new device token</string>
+    <string name="hint_no_gateway">Gateway token set, but the gateway URL is still empty</string>
+    <string name="cred_prompt_title">Set up the online AI</string>
+    <string name="cred_prompt_body">Enter your gateway token (st:…) and gateway URL to enable deepseek-flash. You can skip this and keep using the on-device engine.</string>
+    <string name="cred_prompt_now">Configure now</string>
+    <string name="cred_prompt_later">Later</string>
+</resources>

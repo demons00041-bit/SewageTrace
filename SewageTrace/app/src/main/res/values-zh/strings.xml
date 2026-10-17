@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_title">污水治理</string>
+    <string name="app_tagline">拍下污水、识别污染等级、自动上报，并跟踪治理进度。</string>
+
+    <!-- Auth -->
+    <string name="sign_in">登录</string>
+    <string name="sign_up">注册</string>
+    <string name="phone">手机号</string>
+    <string name="password">密码</string>
+    <string name="agree_terms">我已阅读并同意《用户须知》与《隐私政策》</string>
+    <string name="failed_login">登录失败</string>
+    <string name="failed_register">注册失败</string>
+    <string name="must_agree">请先同意用户须知</string>
+    <string name="retype_password">确认密码</string>
+    <string name="display_name">昵称</string>
+    <string name="password_mismatch">两次输入的密码不一致</string>
+    <string name="password_too_short">密码至少 6 位</string>
+    <string name="demo_login">以演示账号“巡河阿姨”直接进入</string>
+    <string name="about_app">关于本应用</string>
+    <string name="disclaimer_title">本应用是线索收集与可视化工具。</string>
+    <string name="disclaimer_body">基于照片计算的污染指数只描述水体的可见状况，不能替代实验室水质检测，也不构成对排放标准的达标判定，更不是官方投诉渠道的替代品。
+
+自动上报会生成本系统中的一条记录，流转时间与处理时长仅供参考；处理结论以主管部门为准。</string>
+    <string name="disclaimer_short">仅供参考 · 不构成法定水质检测</string>
+
+    <!-- Tabs -->
+    <string name="tab_detect">识别污水</string>
+    <string name="tab_map">地图</string>
+    <string name="tab_feedback">社区</string>
+    <string name="tab_profile">我的</string>
+
+    <!-- Detect -->
+    <string name="take_photo">拍照</string>
+    <string name="pick_photo">从相册选择</string>
+    <string name="analyzing">识别中…</string>
+    <string name="analyze">识别照片</string>
+    <string name="reanalyze">重新识别</string>
+    <string name="post_report">上报主管部门</string>
+    <string name="report_saved">已保存到本地</string>
+    <string name="pollution_index">污染指数</string>
+    <string name="grade">污染等级</string>
+    <string name="confidence">置信度</string>
+    <string name="suspected_type">疑似来源</string>
+    <string name="evidence">视觉证据</string>
+    <string name="evidence_title">证据构成</string>
+    <string name="engine_on_device">本机引擎</string>
+    <string name="engine_cloud">云端 AI</string>
+    <string name="engine_cloud_model">云端 AI · deepseek-flash</string>
+    <string name="engine_offline_note">当前离线，已使用本机引擎完成识别。</string>
+    <string name="engine_cloud_note">已使用 DeepSeek 视觉模型识别。</string>
+    <string name="detect_hint_title">把镜头对准水面，而不是天空</string>
+    <string name="detect_hint_body">画面里带上岸边、管道或参照物，尽量背光拍摄，让水面占满取景框。</string>
+    <string name="not_run">照片尚未识别</string>
+
+    <!-- Grade names -->
+    <string name="grade_r0">未见明显污染</string>
+    <string name="grade_r1">轻微</string>
+    <string name="grade_r2">中度</string>
+    <string name="grade_r3">重度</string>
+    <string name="grade_r4">严重</string>
+    <string name="grade_r0_advice">未见明显污染。可以继续留意这条河，情况有变化时欢迎再拍一次。</string>
+    <string name="grade_r1_advice">存在轻微污染迹象。已保存为本地记录，不会单独上报。</string>
+    <string name="grade_r2_advice">中度污染。将提交主管部门审核。</string>
+    <string name="grade_r3_advice">重度污染。将提交主管部门并标记待现场核查。</string>
+    <string name="grade_r4_advice">严重污染。立即提交并标记为高优先级。如果正在排放，建议同时拨打官方热线。</string>
+
+    <!-- Confidence -->
+    <string name="conf_high">高</string>
+    <string name="conf_medium">中</string>
+    <string name="conf_low">低</string>
+    <string name="conf_high_desc">水面清晰、光线充足，画面中有岸边或参照物。</string>
+    <string name="conf_medium_desc">可用，但距离、反光或取景过近限制了判断。</string>
+    <string name="conf_low_desc">画面信息不足或存在干扰，结论仅供参考。</string>
+
+    <!-- Blocked -->
+    <string name="blocked_title">未进入上报流程</string>
+    <string name="blocked_low_conf">置信度为“低”，为避免误报不进入上报流程；已保存为本地记录。请补拍包含岸边参照物、光线充足、水面清晰的照片。</string>
+    <string name="blocked_not_water">这张照片看起来不是水体。请把镜头对准水面重新拍摄。</string>
+    <string name="blocked_low_grade">未发现明显污染，因此未上报。照片已保存在你的记录里。</string>
+    <string name="blocked_offline_queue">当前离线，上报已排队，恢复网络后会自动发送。</string>
+
+    <!-- Report flow -->
+    <string name="report_filed">上报成功</string>
+    <string name="ticket_number">工单号</string>
+    <string name="assigned_to">已分派</string>
+    <string name="location">位置</string>
+    <string name="unknown_location">位置不可用</string>
+    <string name="view_progress">查看进度</string>
+    <string name="done">完成</string>
+
+    <!-- Progress -->
+    <string name="progress_title">治理进度</string>
+    <string name="stage_log">任务日志</string>
+    <string name="no_log_yet">暂无更新。</string>
+    <string name="percent_treated">已处理</string>
+    <string name="stage_1">已提交</string>
+    <string name="stage_2">真实性校验</string>
+    <string name="stage_3">已分派</string>
+    <string name="stage_4">现场核查</string>
+    <string name="stage_5">方案立项</string>
+    <string name="stage_6">治理施工</string>
+    <string name="stage_7">复测验收</string>
+    <string name="stage_8">已闭环</string>
+    <string name="escalated">已提级</string>
+    <string name="escalation_note">72 小时内 1 公里范围内有 3 位以上不同用户独立上报</string>
+
+    <!-- Map -->
+    <string name="filter_all">全部</string>
+    <string name="filter_gov">政府</string>
+    <string name="filter_lab">送检</string>
+    <string name="filter_plant">污水厂</string>
+    <string name="filter_monitor">监测站</string>
+    <string name="map_offline">底图不可用，当前显示示意地图。</string>
+    <string name="map_attribution">© OpenStreetMap 贡献者</string>
+    <string name="map_legend">图例</string>
+    <string name="nearby">附近</string>
+    <string name="distance_m">%1$d 米</string>
+    <string name="distance_km">%1$.1f 公里</string>
+    <string name="book_test">预约送检水质</string>
+    <string name="agency_type_gov">政府生态环境部门</string>
+    <string name="agency_type_lab">水质检测机构</string>
+    <string name="agency_type_plant">污水处理厂</string>
+    <string name="agency_type_monitor">水质监测站</string>
+    <string name="accreditation_note">演示数据。机构名称为虚构，所示资质仅作示例。</string>
+
+    <!-- Booking -->
+    <string name="booking_title">预约送检水质</string>
+    <string name="booking_slot">时段</string>
+    <string name="booking_items">检测项目</string>
+    <string name="booking_fee">费用</string>
+    <string name="booking_fee_value">现场报价</string>
+    <string name="booking_materials">携带材料</string>
+    <string name="booking_materials_value">500 毫升洁净瓶装水样，以及照片与位置信息</string>
+    <string name="booking_confirm">确认预约</string>
+    <string name="booking_created">预约成功</string>
+    <string name="booking_number">预约号</string>
+    <string name="booking_cancel">取消</string>
+    <string name="booking_reschedule">改期</string>
+    <string name="booking_cancelled">预约已取消</string>
+    <string name="booking_rescheduled">预约已改期</string>
+    <string name="booking_none">暂无预约</string>
+    <string name="booking_status_booked">已预约</string>
+    <string name="booking_status_cancelled">已取消</string>
+    <string name="booking_status_done">已出报告</string>
+    <string name="report_ready">检测报告已出</string>
+    <string name="report_match">与你的照片判断一致</string>
+    <string name="report_mismatch">与你的照片判断不一致</string>
+
+    <!-- Leaderboard -->
+    <string name="leaderboard_title">排行榜</string>
+    <string name="leaderboard_city">同城</string>
+    <string name="leaderboard_country">全国</string>
+    <string name="leaderboard_hidden">本城活跃用户不足 5 人，榜单暂时隐藏以保护隐私。</string>
+    <string name="leaderboard_metric">有效发现</string>
+    <string name="leaderboard_you">我</string>
+    <string name="leaderboard_rank">第 %1$d 名</string>
+    <string name="leaderboard_newcomer">不足 5 次，暂不排名</string>
+    <string name="leaderboard_rules">只有经去重的有效上报才会计分；匿名上报不参与排名。</string>
+
+    <!-- Feedback -->
+    <string name="feedback_title">任务反馈</string>
+    <string name="my_reports">我的上报</string>
+    <string name="in_progress">治理中</string>
+    <string name="closed">已闭环</string>
+    <string name="avg_response">平均响应</string>
+    <string name="hours">%1$.1f 小时</string>
+    <string name="feed_title">全平台工单动态</string>
+    <string name="confirm_treated">确认已处理</string>
+    <string name="dispute_treated">有异议</string>
+    <string name="confirmed_thanks">感谢反馈，已记录你的确认。</string>
+    <string name="disputed_thanks">异议已提交，将安排复核。</string>
+    <string name="authority_on_time">按时率</string>
+    <string name="authority_transparency">透明度</string>
+
+    <!-- Profile / settings -->
+    <string name="my_finds">有效发现</string>
+    <string name="open_cases">在办</string>
+    <string name="closed_cases">已闭环</string>
+    <string name="avg_progress">平均进度</string>
+    <string name="my_reports_title">我的上报记录</string>
+    <string name="my_bookings_title">我的预约</string>
+    <string name="settings">设置</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_zh">中文</string>
+    <string name="settings_auto_report">自动上报</string>
+    <string name="settings_auto_report_desc">中度及以上污染自动提交主管部门</string>
+    <string name="settings_anonymous">榜单匿名参与</string>
+    <string name="settings_anonymous_desc">上报仍然有效，但榜上不显示昵称</string>
+    <string name="settings_location">位置精度</string>
+    <string name="settings_location_1000">较粗 — 1 公里</string>
+    <string name="settings_location_500">中等 — 500 米</string>
+    <string name="settings_location_50">精确 — 50 米</string>
+    <string name="settings_ai_mode">识别引擎</string>
+    <string name="settings_ai_mode_auto">自动 — 联网时使用云端</string>
+    <string name="settings_ai_mode_local">仅本机引擎</string>
+    <string name="settings_ai_mode_cloud">仅云端 AI</string>
+    <string name="settings_ai_key">DeepSeek API 密钥</string>
+    <string name="settings_ai_key_hint">sk-…</string>
+    <string name="settings_ai_key_saved">密钥已保存在本机</string>
+    <string name="settings_ai_key_missing">尚未配置 API 密钥</string>
+    <string name="settings_ai_key_clear">移除密钥</string>
+    <string name="settings_ai_key_privacy">密钥只保存在本机，除 api.deepseek.com 外不会发送到任何地方。</string>
+    <string name="settings_ai_model">模型</string>
+    <string name="settings_city">城市</string>
+    <string name="settings_country">国家</string>
+    <string name="sign_out">退出登录</string>
+    <string name="save">保存</string>
+    <string name="back">返回</string>
+    <string name="cancel">取消</string>
+    <string name="delete_local_data">清除本地数据</string>
+    <string name="delete_local_data_desc">删除本机保存的照片、上报记录与预约</string>
+
+    <!-- Suspected source -->
+    <string name="type_domestic">生活污水直排</string>
+    <string name="type_industrial">工业废水</string>
+    <string name="type_livestock">养殖废水</string>
+    <string name="type_black_odorous">黑臭 / 发绿水体</string>
+    <string name="type_dumping">垃圾倾倒</string>
+    <string name="type_construction">施工泥浆水</string>
+    <string name="type_oil">油污漂浮</string>
+    <string name="type_unknown">不明</string>
+
+    <!-- Evidence dimensions -->
+    <string name="dim_color">颜色与浊度</string>
+    <string name="dim_floatables">漂浮物</string>
+    <string name="dim_foam_oil">泡沫与油膜</string>
+    <string name="dim_state">水体与岸边状态</string>
+    <string name="dim_eutro">富营养化</string>
+    <string name="dim_quality">拍摄质量</string>
+
+    <!-- Log text -->
+    <string name="log_submitted">工单已建立，等待进入工单池。</string>
+    <string name="log_pooled">已通过图片真实性校验与重复检测（感知哈希）。</string>
+    <string name="log_dispatched">已按行政区划分派至 %1$s。</string>
+    <string name="log_verified">执法人员到场核实，现场确有污染迹象，已拍照取证。</string>
+    <string name="log_filed">已确定整治方案与责任单位，纳入本季度整治计划。</string>
+    <string name="log_treating">开始截污纳管与清淤施工。</string>
+    <string name="log_treating_progress">截污管道已完工，正在清淤与生态修复。</string>
+    <string name="log_treating_done">主体治理工程已完工，等待水质复测。</string>
+    <string name="log_retest">已安排第三方采样复测。</string>
+    <string name="log_closed">复测结果改善，验收通过，工单关闭。</string>
+    <string name="log_dispute">用户提出异议：%1$s。工单已回退至「%2$s」，将安排二次核实。</string>
+    <string name="log_urge">该工单进度低于 25% 且连续 7 天无新日志，平台已自动生成催办单并抄送上级部门。</string>
+    <string name="log_escalate">同一水体 1 公里内 72 小时内被 %1$d 位不同用户独立报告，工单自动提级并优先分派。</string>
+    <string name="role_platform">平台</string>
+    <string name="role_authority">主管部门</string>
+    <string name="role_operator">治理单位</string>
+    <string name="role_lab">监测机构</string>
+    <string name="role_user">用户</string>
+
+    <!-- Badges -->
+    <string name="badge_guardian">河道守护者</string>
+    <string name="badge_observer">巡河观察员</string>
+    <string name="badge_driver">治污推动者</string>
+    <string name="badge_streak">连续 7 天巡河</string>
+
+    <!-- Sample evidence statements (translatable history) -->
+    <string name="ev_heavy_color">水体呈深黑色并带灰白色泡沫，岸边可见排出管道。</string>
+    <string name="ev_moderate_color">水面被绿色藻膜覆盖，有大量持久不破的泡沫。</string>
+    <string name="ev_mild_color">水色发黄浑浊，边缘聚积塑料与生活杂物。</string>
+    <string name="ev_clean_color">水面清透，可看到水下结构与倒影。</string>
+    <string name="ev_blurred">画面失焦，无法可靠判断水面状况。</string>
+    <string name="ev_night">光线严重不足，水面细节不可信。</string>
+    <string name="ev_screenshot">画面疑似对着屏幕翻拍。</string>
+    <string name="ev_demo_note">岸边有持续排放的水流进入河道。</string>
+
+    <!-- Standard references (illustrative only) -->
+    <string name="std_eqa">1974 年环境质量法 · 相关法规仅作示例</string>
+    <string name="std_drainage">排水与地方政府条例 · 仅作示例</string>
+    <string name="std_sewage">污水处理设施导则 · 仅作示例</string>
+    <string name="std_river">河流水质分级 · 仅作示例</string>
+
+    <!-- On-device evidence notes -->
+    <string name="note_color_dark">水体大面积发黑，透光性明显下降。</string>
+    <string name="note_color_green">水体呈明显绿色，疑似藻类繁殖或污水滞留。</string>
+    <string name="note_color_murky">水体浑浊，可见悬浮物，透明度下降。</string>
+    <string name="note_float_many">水面有明显成片漂浮杂物与生活垃圾。</string>
+    <string name="note_float_some">局部可见零星漂浮物。</string>
+    <string name="note_foam">水面可见持久泡沫或反光油膜。</string>
+    <string name="note_state">岸边可见冲刷污迹，水体呈滞留状。</string>
+    <string name="note_eutro">水面出现绿色藻膜/水华迹象。</string>
+    <string name="note_quality">拍摄质量限制了结论的可信度。</string>
+    <string name="note_clean">画面中未见明显的颜色、漂浮物或泡沫异常。</string>
+
+    <!-- Demo scenes -->
+    <string name="scene_heavy_title">重度污染 · 工业黑水</string>
+    <string name="scene_heavy_sub">岸边暗管持续排放的黑色水体</string>
+    <string name="scene_heavy_note">水体呈深黑色并带灰白色泡沫，岸边可见排出管道。</string>
+    <string name="scene_moderate_title">中度污染 · 绿藻泡沫</string>
+    <string name="scene_moderate_sub">富营养化导致绿藻与持久泡沫</string>
+    <string name="scene_moderate_note">水面被绿色藻膜覆盖，有大量持久不破的泡沫。</string>
+    <string name="scene_mild_title">轻度污染 · 浑浊漂浮物</string>
+    <string name="scene_mild_sub">水质发黄浑浊，夹杂漂浮垃圾</string>
+    <string name="scene_mild_note">水色发黄浑浊，边缘聚积塑料与生活杂物。</string>
+    <string name="scene_clean_title">无异常见 · 清透水面</string>
+    <string name="scene_clean_sub">正常的城市河道水面</string>
+    <string name="scene_clean_note">水面清透，可看到水下结构与倒影。</string>
+    <string name="scene_blurred_title">低置信度 · 画面模糊</string>
+    <string name="scene_blurred_sub">对焦失败的照片</string>
+    <string name="scene_screenshot_title">低置信度 · 屏幕翻拍</string>
+    <string name="scene_screenshot_sub">对着屏幕翻拍的照片</string>
+    <string name="scene_night_title">低置信度 · 夜间拍摄</string>
+    <string name="scene_night_sub">光线不足的夜间水面</string>
+
+    <!-- Mock capture -->
+    <string name="mock_camera">演示拍摄</string>
+    <string name="mock_camera_note">模拟器没有真实相机，这里按所选场景的视觉特征合成一张照片。</string>
+    <string name="gallery_note">从相册选择会打开系统选择器。</string>
+
+    <!-- Engine fallback notices -->
+    <string name="fallback_no_key">未配置 DeepSeek 密钥，已使用本机引擎。</string>
+    <string name="fallback_no_network">无网络，已使用本机引擎。</string>
+    <string name="fallback_forced_local">识别引擎设置为仅本机。</string>
+    <string name="fallback_cloud_failed">云端识别失败（%1$s），已改用本机引擎。</string>
+
+    <!-- API key screen -->
+    <string name="settings_api_key">云端识别凭据</string>
+    <string name="api_key_title">凭据怎么用</string>
+    <string name="api_key_body">使用你自己的反代网关签发的设备令牌（st:…）。真正的模型密钥留在服务端，即使 APK 被反编译也拿不到可用凭据。不填也能用——所有照片都会由本机引擎分析。</string>
+    <string name="api_key_label">API Key</string>
+    <string name="api_key_storage">写入磁盘前用 Android Keystore 的 AES-GCM 密钥加密，只发往你配置的网关。这挡不住运行中设备的内存 dump，但能防住文件拷贝、备份、adb 导出导致的明文泄露。</string>
+    <string name="api_key_test">测试连接</string>
+    <string name="api_key_untested">还没测试过。</string>
+    <string name="api_key_testing">正在请求 api.deepseek.com…</string>
+    <string name="api_key_ok">密钥可用。</string>
+    <string name="api_key_failed">测试失败。</string>
+    <string name="api_key_clear">清除密钥</string>
+    <string name="api_key_usage">会发送什么</string>
+    <string name="api_key_usage_body">一张长边缩放到 1280 像素的照片，加一段固定指令。不包含账号名、手机号与精确地址。每个结果页都会标明结论来自本机引擎、网关还是直连。</string>
+
+    <!-- Ticket log actors and texts -->
+    <string name="role_treatment_org">治理单位</string>
+    <string name="log_created">工单已建立，等待进入工单池。</string>
+    <string name="log_treating_start">开始截污纳管与清淤施工。</string>
+    <string name="log_treating_mid">截污管道已完工，正在清淤与生态修复。</string>
+    <string name="log_generic">状态更新。</string>
+    <string name="log_urged">该工单进度低于 25% 且连续 7 天无新日志，平台已自动生成催办单并抄送上级部门。</string>
+    <string name="log_escalated">同一水体 1 公里内 72 小时内被 %1$d 位不同用户独立报告，工单自动提级并优先分派。</string>
+
+    <!-- Rank badges -->
+    <string name="badge_river_guardian">河道守护者</string>
+    <string name="badge_river_watcher">巡河观察员</string>
+
+    <!-- Misc -->
+    <string name="offline">离线</string>
+    <string name="permission_camera_denied">相机权限被拒绝，仍可从相册选择照片。</string>
+    <string name="demo_notice">演示版本 · 数据保存在本机</string>
+    <string name="api_key_cleared">密钥已清除，将使用本机识别引擎</string>
+    <string name="api_key_saved">密钥已保存</string>
+
+    <string name="hint_cloud_ready">联网 · deepseek-flash</string>
+    <string name="hint_no_key">本机识别引擎 · 配置密钥后可用联网 AI</string>
+    <string name="hint_local_forced">本机识别引擎 · 已关闭联网 AI</string>
+    <string name="mode_auto">自动</string>
+    <string name="mode_cloud">联网 AI</string>
+    <string name="mode_local">本机</string>
+
+    <string name="key_configured">密钥已配置</string>
+    <string name="key_missing">未配置密钥</string>
+    <string name="realname_demo">演示用户</string>
+
+    <string name="level_r4">重度</string>
+    <string name="level_r3">中度</string>
+    <string name="level_r2">轻度</string>
+    <string name="level_r1">轻微</string>
+    <string name="level_r0">未见明显污染</string>
+
+    <string name="prec_1km_short">1 千米</string>
+    <string name="prec_500m_short">500 米</string>
+    <string name="prec_50m_short">50 米</string>
+    <string name="loc_precision_note">精度越粗，地图与工单上暴露的位置越模糊。</string>
+    <string name="loc_precision_with">位置精度：%1$s</string>
+
+    <string name="progress_formula">进度百分比由服务端按已完成流程节点计算，客户端无法伪造。</string>
+
+    <string name="stat_valid">有效发现</string>
+    <string name="stat_open">在办工单</string>
+    <string name="stat_closed">已闭环</string>
+    <string name="stat_avg">平均进度</string>
+
+    <string name="setting_language">语言</string>
+    <string name="setting_engine">识别引擎</string>
+    <string name="setting_engine_desc">自动模式在已配置密钥且网络可用时走联网模型，否则使用本机引擎。</string>
+    <string name="setting_auto_report">自动上报</string>
+    <string name="setting_auto_report_desc">照片评级达到 R2 及以上时，自动提交到工单池并流转至主管部门。</string>
+    <string name="setting_anon">排行榜匿名</string>
+    <string name="setting_anon_desc">公开榜单中以「你」代替你的昵称。</string>
+
+    <string name="menu_standards">参照标准</string>
+    <string name="menu_standards_sub">各评级等级分别对照什么</string>
+    <string name="menu_privacy">隐私与数据处理</string>
+    <string name="menu_privacy_sub">照片、位置，以及哪些数据会离开手机</string>
+    <string name="menu_about">免责声明与关于</string>
+    <string name="menu_about_sub">本应用能做什么、不能做什么</string>
+    <string name="menu_api_key">API 密钥</string>
+    <string name="menu_api_key_ok">已配置</string>
+    <string name="menu_api_key_none">未配置</string>
+    <string name="logout">退出登录</string>
+
+    <string name="my_bookings">我的送检预约</string>
+    <string name="no_bookings">暂无预约</string>
+    <string name="no_reports">暂无上报记录</string>
+    <string name="no_reports_sub">拍一张河道或排水口，创建第一条线索。</string>
+    <string name="cancel_booking">取消预约</string>
+    <string name="reschedule">改期</string>
+    <string name="booking_code_line">预约号 %1$s</string>
+
+    <string name="about_standards">1974 年环境质量法（马来西亚）· INWQS 水质指数 · MSMA 雨水管理手册 · Indah Water 污水排放标准</string>
+    <string name="footer_demo">演示版本 · 所有机构与工单均为虚构</string>
+
+    <!-- ===== 机构/预约 ===== -->
+    <string name="app_name">污水治理</string>
+    <string name="evidence_breakdown">证据明细</string>
+    <string name="agency_address">地址</string>
+    <string name="agency_distance">距离</string>
+    <string name="agency_phone">电话</string>
+    <string name="agency_hours">办公时间</string>
+    <string name="agency_standard">适用标准</string>
+    <string name="agency_demo_data">本条目为演示数据，未经主管部门核实。正式版本必须展示数据来源与最后确认日期。</string>
+    <string name="agency_booking_title">送检预约</string>
+    <string name="agency_accredited">具备资质的实验室（演示声明）</string>
+    <string name="agency_tests">检测项目</string>
+    <string name="agency_fee">参考费用</string>
+    <string name="agency_quote">费用面议</string>
+    <string name="agency_materials">需携带</string>
+    <string name="agency_booking_note">预约仅锁定时段，费用与检测项目由实验室现场确认。报告由实验室出具，并挂接到你的工单上用于「视觉—实测」对照。</string>
+    <string name="agency_book_slot">预约送检时段</string>
+    <string name="agency_gov_channel">水污染的法定举报渠道仍为主管部门热线。在本应用提交的是线索，不构成法定举报，也不开启执法程序。</string>
+    <string name="booking_success">预约成功</string>
+    <string name="booking_code">预约号</string>
+    <string name="booking_agency">实验室</string>
+    <string name="booking_tests">检测项目</string>
+    <string name="booking_reminder">请携水样（≥500 毫升，冷藏保存）与身份证件到前台并出示预约号。时段开始前 4 小时以上可在「我的 → 我的预约」取消。</string>
+    <string name="booking_pick_date">选择日期</string>
+    <string name="booking_pick_slot">选择时段</string>
+    <string name="booking_pick_tests">检测项目</string>
+    <string name="booking_multi">可多选</string>
+    <string name="day_today">今天</string>
+    <string name="day_tomorrow">明天</string>
+    <string name="day_day_after">后天</string>
+    <string name="day_next_mon">下周一</string>
+    <string name="not_found">未找到记录</string>
+    <string name="report_detail">上报详情</string>
+    <string name="accuracy_short">精度 %1$d 米</string>
+    <string name="waterbody">水体名称</string>
+    <string name="report_status">上报状态</string>
+    <string name="confidence_label">置信度</string>
+    <string name="extra_note">补充说明</string>
+    <string name="low_conf_note">低置信度记录不会上报，也不计入排行榜。请重拍：让岸边参照物入镜，避免逆光与强反光。</string>
+    <string name="manual_submit">手动提交这条记录</string>
+    <string name="linked_ticket">关联工单</string>
+    <string name="view_task_log">查看治理任务日志</string>
+    <string name="calibration_title">视觉结论与实测对照</string>
+    <string name="calibration_desc">需要定量数据时，请从「地图」页预约送检。实验室回填报告后这里会自动出现，并一并进入模型校准集。</string>
+    <string name="calibration_demo">（演示数值，非真实检测结果）</string>
+
+    <!-- ===== 工单/任务日志 ===== -->
+    <string name="ticket_title">治理任务工单</string>
+    <string name="created_at">创建时间</string>
+    <string name="sla_deadline">承诺办结时限</string>
+    <string name="joint_reports">联合上报</string>
+    <string name="people_count">%1$d 人</string>
+    <string name="urged_label">催办</string>
+    <string name="urged_value">已自动催办（进度 &lt;25% 且 7 天无日志）</string>
+    <string name="overdue_tip">已逾期 %1$d 天——你可以提出异议，要求说明。</string>
+    <string name="stage_progress">阶段进度</string>
+    <string name="server_computed">服务端计算，客户端只读</string>
+    <string name="task_log">任务日志</string>
+    <string name="entry_count">%1$d 条</string>
+    <string name="my_feedback">我的反馈</string>
+    <string name="dispute_btn">处理不符 / 提异议</string>
+    <string name="thank_btn">确认处理结果</string>
+    <string name="thanked">已确认</string>
+    <string name="verify_title">拍新照片复检</string>
+    <string name="verify_sub">本机视觉引擎，不上传</string>
+    <string name="verify_desc">对同一位置拍一张新照片，判断污染是否真的消失。识别在本机完成；若结果显示已清除，工单将标记为可办结。</string>
+    <string name="verify_btn">打开相机复检</string>
+    <string name="verify_running">识别中…</string>
+    <string name="verify_result_cleared">看起来已处理</string>
+    <string name="verify_result_pending">仍有污染</string>
+    <string name="verify_result_detail">指数 %1$d · 等级 %2$s · 置信度 %3$d%%</string>
+    <string name="verify_result_engine">引擎：%1$s</string>
+    <string name="simulate_advance">模拟政府推进下一阶段（演示）</string>
+    <string name="dispute_dialog_title">提交反馈</string>
+    <string name="dispute_dialog_desc">请描述你实际看到的情况（例如「已经清理干净」或「只清了垃圾，没有排查排放口」）。工单将回到「现场核实」，进度按新阶段重新计算。</string>
+    <string name="dispute_hint">你的反馈（选填）</string>
+    <string name="dispute_default">现场情况与上报状态不符</string>
+    <string name="submit">提交</string>
+
+    <!-- ===== 标准页 ===== -->
+    <string name="standards_warning">本页所有限值当前均标记为「待核验」。发布前必须逐条从标准原文取值，并写入 assets/standards.json，同时记录条款号与适用版本。</string>
+    <string name="std_msma_desc">马来西亚水污染的主要法规，规定向内陆水体排污场所的许可条件与排放限值。</string>
+    <string name="std_inwqs_desc">Ⅰ–Ⅴ 级水质分级与参数限值，用于判断受纳水体应达到的目标。</string>
+    <string name="std_sewage_desc">污水与工业废水排放的 A 标准与 B 标准限值。</string>
+    <string name="std_doe_desc">马来西亚负责受理污染举报并作出执法的部门。</string>
+    <string name="limit_pending">限值待核验</string>
+    <string name="why_no_ratio_title">为什么应用不给出「超标倍数」？</string>
+    <string name="why_no_ratio_desc">照片无法测量溶解氧、氨氮或重金属，任何由图像推出的「超标倍数」都是伪定量。本应用只产出与任何标准无关的视觉异常指数；具有法律效力的结论必须由有资质的实验室现场采样。</string>
+
+    <!-- ===== 关于/隐私 ===== -->
+    <string name="about_title">关于与隐私</string>
+    <string name="about_engine_line">引擎：%1$s</string>
+    <string name="data_handling_title">你的数据如何处理</string>
+    <string name="data_1">识别在本机完成——除非你启用联网 AI，照片与像素数据不会离开手机</string>
+    <string name="data_2">上报只上传压缩照片、拍摄时间、位置（精度可降到 1 千米）与识别结论</string>
+    <string name="data_3">上传前对人脸、车牌与门牌自动模糊</string>
+    <string name="data_4">位置精度可降级；匿名上报不计入排行榜</string>
+    <string name="data_5">你可以随时删除全部本地记录与账号数据；服务端按法定义务保留工单记录</string>
+    <string name="logout_clear">退出登录并清除会话</string>
+
+    <!-- ===== 识别页 ===== -->
+    <string name="detect_result_title">识别结果</string>
+    <string name="detect_result_sub">查看 AI 识别结果，确认后提交主管部门</string>
+    <string name="retake">重新拍摄</string>
+    <string name="analyzing_steps">颜色与浊度 · 漂浮物 · 泡沫与油膜 · 岸边状态 · 富营养化</string>
+    <string name="start_detect">开始识别</string>
+    <string name="report_params">上报设置</string>
+    <string name="auto_report_gov">自动上报至主管部门</string>
+    <string name="auto_report_gov_desc">仅 R2 及以上触发上报；R0/R1 只存为本地草稿</string>
+    <string name="loc_precision">位置精度</string>
+    <string name="prec_1km">1 千米（最私密）</string>
+    <string name="prec_500m">500 米</string>
+    <string name="prec_50m">50 米（默认）</string>
+    <string name="confirm_and_report">确认并自动上报</string>
+    <string name="confirm_save_local">确认并仅存本地</string>
+    <string name="captured_frame">拍摄画面</string>
+    <string name="scene_sample_tag">%1$s · 示例抓拍</string>
+    <string name="watermark_hint">水印：时间 · 位置（精度 %1$d 米）</string>
+    <string name="index_explainer">说明：该指数是画面异常程度的加权得分，与任何法定限值无关，不能换算为污染物浓度。</string>
+    <string name="model_line">模型：%1$s</string>
+    <string name="outcome_escalated">已上报并提级</string>
+    <string name="outcome_reported">已上报</string>
+    <string name="platform_pool">平台工单池</string>
+    <string name="outcome_reported_body">工单 %1$s 已建立并流转至 %2$s。</string>
+    <string name="outcome_escalated_tail">由于 72 小时内有 3 位以上用户报告同一水体，工单已自动提级。</string>
+    <string name="outcome_blocked">未进入上报流程</string>
+    <string name="outcome_draft">已存为本地记录</string>
+    <string name="outcome_failed">提交被拒绝</string>
+    <string name="view_report_and_ticket">查看上报与工单</string>
+    <string name="back_to_retake">返回重新拍摄</string>
+    <string name="detect_idle_sub">拍一张水面照片，AI 自动给出污染等级</string>
+    <string name="detect_cta">识别污水</string>
+    <string name="detect_cta_sub">点击拍摄一张示例画面\n照片默认只保存在本机</string>
+    <string name="cloud_add_key">尚未配置联网 AI —— 添加 API 密钥</string>
+    <string name="pick_scene">选择拍摄场景</string>
+    <string name="pick_scene_sub">仅用于演示：模拟不同水质条件</string>
+    <string name="did_you_know">你知道吗</string>
+    <string name="did_you_know_body">清澈、无色、无味的水也可能含有重金属或病原体——外观正常并不能证明水质安全。需要定量数据时，请从「地图」页预约送检。</string>
+    <string name="shoot_arrow">抓拍 ›</string>
+    <string name="engine_mode_local">引擎：本机 · 离线</string>
+    <string name="engine_mode_cloud">引擎：联网 AI 就绪</string>
+    <string name="engine_mode_auto">引擎：自动（联网优先，失败回退本机）</string>
+    <string name="engine_hint_cloud_ready">识别会把压缩后的照片发送到已配置的云端模型，返回分级结论。</string>
+    <string name="engine_hint_cloud_missing">未配置 API 密钥——识别将回退到本机引擎。</string>
+    <string name="engine_hint_local">完全在本机离线运行，不会上传任何像素数据。</string>
+    <string name="filter_wwtp">污水厂</string>
+    <string name="filter_station">监测站</string>
+    <string name="legend_gov">政府部门</string>
+    <string name="legend_lab">可送检机构</string>
+    <string name="legend_wwtp">污水处理厂</string>
+    <string name="legend_station">监测站</string>
+    <string name="legend_reports">污染上报点</string>
+    <string name="map_hide_reports">隐藏污染点位</string>
+    <string name="map_show_reports">显示污染点位</string>
+    <string name="map_basemap_note">示意底图 - 正式版使用 OpenStreetMap（© OpenStreetMap contributors, ODbL）</string>
+    <string name="map_nearby">附近的政府与检测机构</string>
+    <string name="map_sorted">按距离排序 - %1$d 个</string>
+    <string name="repstatus_draft">草稿</string>
+    <string name="repstatus_reported">已上报</string>
+    <string name="repstatus_rejected">已驳回</string>
+    <string name="repstatus_inticket">已入工单</string>
+    <string name="rank_page_title">排行榜与反馈</string>
+    <string name="rank_tab_board">排行榜</string>
+    <string name="rank_tab_feedback">任务反馈</string>
+    <string name="rank_city">同城榜</string>
+    <string name="rank_nation">全国榜</string>
+    <string name="rank_7d">近 7 天</string>
+    <string name="rank_30d">近 30 天</string>
+    <string name="rank_all">全部</string>
+    <string name="rank_rule_text">排名依据「有效发现数」：等级 R2 及以上、通过平台审核、同一水体 24 小时内只计一次。匿名上报、被驳回、R0/R1 记录不计分；新手（有效发现 &lt; 5 次）不进入榜单，避免反推真实身份。</string>
+    <string name="rank_empty_title">当前城市活跃用户不足 5 人</string>
+    <string name="rank_empty_sub">为保护隐私，城市榜在活跃度不足时不展示（防止通过榜单反推个人位置与活跃时间）。</string>
+    <string name="rank_footer">数据每 5 分钟更新；发现异常计数可在下方「任务反馈」发起申诉。</string>
+    <string name="rank_row_detail">%1$s · 有效发现 %2$d · 进入工单 %3$d · 已闭环 %4$d</string>
+    <string name="feedback_my_progress">我的工单进度</string>
+    <string name="feedback_no_ticket">还没有在办工单。去「识别」页拍摄一处污水，R2 及以上会自动生成工单。</string>
+    <string name="feedback_escalated">提级</string>
+    <string name="feedback_disputed">异议</string>
+    <string name="feedback_dynamic">全平台工单动态</string>
+    <string name="feedback_dynamic_sub">全平台 · 仅展示公开字段</string>
+    <string name="feedback_transparency">平台透明度</string>
+    <string name="feedback_global">全平台工单 %1$d 件 · 已闭环 %2$d 件 · 平均进度 %3$d%% · 多人印证提级 %4$d 件</string>
+    <string name="feedback_progress_rule">进度百分比由平台按公开阶段权重（分派 5% / 核实 15% / 立项 15% / 施工治理 50% / 复测 10% / 关闭 5%）计算，客户端不可修改。</string>
+    <string name="feedback_actions">我要反馈</string>
+    <string name="fb_done_title">政府已处理，但系统仍显示进行中</string>
+    <string name="fb_done_desc">对任意工单提交异议，进度会回退至「现场核实」并二次核实</string>
+    <string name="fb_rejected_title">拍摄到的污水没有被受理</string>
+    <string name="fb_rejected_desc">检查是否 R0/R1、置信度是否为低，或 24 小时内同点位重复</string>
+    <string name="fb_rank_title">排行榜计数有误</string>
+    <string name="fb_rank_desc">对有效发现数发起申诉，7 个工作日内人工复核</string>
+    <string name="fb_other_title">其他建议与问题</string>
+    <string name="fb_other_desc">真实污染请通过当地主管部门官方渠道反映，本应用不承担受理责任</string>
+    <string name="ticket_escalated_badge">已提级</string>
+    <string name="phone_hint">演示版任意 11 位数字</string>
+    <string name="password_hint">演示版任意内容</string>
+    <string name="city_hint">常驻城市（决定同城榜）</string>
+    <string name="nickname_hint">昵称（排行榜展示，可随时改匿名）</string>
+    <string name="auth_agree_sub">同意上传照片与位置用于污染线索上报；可随时撤回</string>
+    <string name="err_phone_length">请输入 11 位手机号</string>
+    <string name="err_no_password">请输入密码 / 验证码</string>
+    <string name="err_no_nickname">请填写昵称</string>
+    <string name="register_and_login">注册并登录</string>
+    <string name="demo_note">演示版说明：未开启云端 AI 时照片不出本机；本机识别为规则引擎；政府处理进度为模拟数据。</string>
+    <string name="disclaimer_law">本应用是基于照片的污染线索收集与可视化工具，不是法定检测手段，也不能替代当地主管部门的官方举报渠道。识别结果为「视觉线索评分」，不得作为执法或维权依据；污染认定与处理结论以属地主管部门为准。</string>
+    <string name="proxy_mode_title">代理网关模式</string>
+    <string name="proxy_mode_body">已识别为网关令牌（st: 前缀）。模型密钥保存在网关侧，本应用不持有，即使 APK 被反编译也拿不到任何第三方密钥。</string>
+    <string name="direct_mode_title">警告：直连密钥</string>
+    <string name="direct_mode_body">这看起来是原厂密钥。它会保存在本机，任何能解包 APK 或 root 手机的人都能取到。除了本机调试，请改用网关令牌。</string>
+    <string name="api_key_fields">凭据</string>
+    <string name="token_label">设备令牌</string>
+    <string name="gateway_label">网关地址</string>
+    <string name="cloud_model_label">模型</string>
+    <string name="rotate_token">生成新的设备令牌</string>
+    <string name="hint_no_gateway">已填网关令牌，但网关地址还是空的</string>
+    <string name="cred_prompt_title">配置联网识别</string>
+    <string name="cred_prompt_body">填入网关令牌（st:…）和网关地址即可启用 deepseek-flash。也可以跳过，继续用本机离线引擎。</string>
+    <string name="cred_prompt_now">现在配置</string>
+    <string name="cred_prompt_later">稍后再说</string>
+    <string name="fallback_title">已改用本机引擎</string>
+</resources>

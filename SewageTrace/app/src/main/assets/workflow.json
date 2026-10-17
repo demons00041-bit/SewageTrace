@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "version": "1.0.0",
+  "notice": "进度百分比由服务端按本文件公式计算，客户端只读、不得上传或覆盖。演示版由本地 TicketService 按同一公式模拟服务端计算。",
+  "formula": "progress = clamp(0, 100, 100 * Σ(stageWeight[i] * completion[i]))",
+  "stages": [
+    { "order": 1, "code": "SUBMITTED", "name": "已提交", "weight": 0, "actorRole": "用户", "slaHours": 0, "description": "工单已建立，等待进入工单池" },
+    { "order": 2, "code": "POOLED", "name": "进入工单池", "weight": 0, "actorRole": "平台", "slaHours": 2, "description": "完成查重与图片真实性校验" },
+    { "order": 3, "code": "DISPATCHED", "name": "已分派", "weight": 5, "actorRole": "平台", "slaHours": 24, "description": "按行政区划分派至属地主管部门" },
+    { "order": 4, "code": "VERIFIED", "name": "现场核实", "weight": 15, "actorRole": "主管部门", "slaHours": 72, "description": "执法人员到场核实水体状况" },
+    { "order": 5, "code": "FILED", "name": "方案立项", "weight": 15, "actorRole": "主管部门", "slaHours": 168, "description": "确定整治方案与责任单位" },
+    { "order": 6, "code": "TREATING", "name": "施工治理", "weight": 50, "actorRole": "治理单位", "slaHours": 720, "description": "清淤、截污、生态修复等工程实施" },
+    { "order": 7, "code": "RETEST", "name": "水质复测", "weight": 10, "actorRole": "监测机构", "slaHours": 168, "description": "第三方或监测站采样复测" },
+    { "order": 8, "code": "CLOSED", "name": "验收关闭", "weight": 5, "actorRole": "主管部门", "slaHours": 72, "description": "验收通过，工单关闭" }
+  ],
+  "autoUrge": {
+    "progressBelow": 25,
+    "idleDays": 7,
+    "description": "同一工单进度低于 25% 且连续 7 天无日志，平台自动生成催办单"
+  },
+  "transparencyMetrics": ["平均首次响应时长", "平均处理总时长", "按期完成率", "日志完整度", "用户异议率"]
+}

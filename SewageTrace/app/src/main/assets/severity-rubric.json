@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "rubricVersion": "1.0.0",
+  "generatedAt": "2026-10-15",
+  "disclaimer": "污染指数是本 App 内部的视觉评分，与 GB 3838 / GB 18918 / GB 8978 等标准的任何限值都没有换算关系，不得表述为“超标X倍”。等级只是线索提示，不构成检测结论。",
+  "maxScore": 100,
+  "dimensions": [
+    {
+      "id": "colorTurbidity",
+      "name": "颜色与浊度",
+      "weight": 25,
+      "hint": "明显发黑 / 发绿 / 发黄 / 乳白；可透视度下降；水面出现明显色带",
+      "positiveSignals": ["水体发黑发绿", "呈乳白色或灰白色", "出现黄褐色色带", "水底完全不可见", "表面有明显油彩光泽"]
+    },
+    {
+      "id": "floatables",
+      "name": "漂浮物与垃圾",
+      "weight": 20,
+      "hint": "塑料、生活垃圾、成片垃圾带、油性漂浮物",
+      "positiveSignals": ["塑料瓶袋漂浮", "成片生活垃圾", "水面聚集成絮状物", "岸边堆有倾倒垃圾"]
+    },
+    {
+      "id": "foamOil",
+      "name": "泡沫与油膜",
+      "weight": 15,
+      "hint": "持久不破的泡沫、彩色油膜、乳化带",
+      "positiveSignals": ["持久不破的白色泡沫", "彩色油膜反光", "水面乳化浑浊带"]
+    },
+    {
+      "id": "waterBodyState",
+      "name": "水体与岸边状态",
+      "weight": 20,
+      "hint": "黑臭、底泥上浮、排污管或暗管痕迹、死鱼与动物异常、岸边污迹与冲刷痕",
+      "positiveSignals": ["可见排污管/暗管口", "底泥上浮成团", "岸边有冲刷污迹", "发现死鱼"]
+    },
+    {
+      "id": "eutrophication",
+      "name": "富营养化",
+      "weight": 10,
+      "hint": "藻华 / 水华、水面绿色絮状物、蓝藻聚集",
+      "positiveSignals": ["水面覆盖绿色藻膜", "蓝绿色絮状漂浮", "大面积水华"]
+    },
+    {
+      "id": "captureQuality",
+      "name": "参考尺度与拍摄质量",
+      "weight": 10,
+      "hint": "仅用于可信度折减：无参照物、距离过远、强反光、夜间、疑似屏幕翻拍",
+      "penaltySignals": ["无岸边或物体参照", "距离过远", "强反光", "夜间拍摄", "疑似屏幕翻拍"]
+    }
+  ],
+  "levels": [
+    {
+      "code": "R4",
+      "minScore": 70,
+      "name": "重度污染迹象",
+      "shortName": "重度",
+      "color": "#DC2626",
+      "explanation": "可能存在明显排污行为（含疑似工业废水或暗管排放），建议立即上报并注意人身安全。",
+      "autoReport": true,
+      "safetyTip": "请勿靠近排污口、勿徒手接触水体；疑似工业偷排请立即拨打 12369。"
+    },
+    {
+      "code": "R3",
+      "minScore": 50,
+      "name": "中度污染迹象",
+      "shortName": "中度",
+      "color": "#F97316",
+      "explanation": "水体感官性状显著异常，建议上报由专业机构核实。",
+      "autoReport": true,
+      "safetyTip": "建议在安全距离外拍摄，避免涉水。"
+    },
+    {
+      "code": "R2",
+      "minScore": 30,
+      "name": "轻度污染迹象",
+      "shortName": "轻度",
+      "color": "#EAB308",
+      "explanation": "存在可见异常，可上报，并建议预约线下送检确认。",
+      "autoReport": true,
+      "safetyTip": "如需确认污染类型，可在地图页预约水质检测。"
+    },
+    {
+      "code": "R1",
+      "minScore": 15,
+      "name": "轻微异常",
+      "shortName": "轻微",
+      "color": "#84CC16",
+      "explanation": "不足以判断是否污染，建议更换角度或靠近岸边重拍。",
+      "autoReport": false,
+      "safetyTip": "重拍时请让画面包含岸边参照物。"
+    },
+    {
+      "code": "R0",
+      "minScore": 0,
+      "name": "未见明显污染",
+      "shortName": "正常",
+      "color": "#22C55E",
+      "explanation": "仅代表该画面未见异常，不代表水体达标。",
+      "autoReport": false,
+      "safetyTip": "盲区：透明、无色但含毒性或病原体的污染无法通过外观识别。"
+    }
+  ],
+  "confidence": {
+    "high": { "label": "高", "description": "光线充足、有岸边参照物、水体清晰可辨" },
+    "medium": { "label": "中", "description": "有一定参照物，但存在反光或距离偏远的干扰" },
+    "low": { "label": "低", "description": "画面信息不足或存在拍摄干扰，结论仅供参考" }
+  },
+  "suspectedTypes": [
+    { "id": "domestic", "name": "生活污水直排" },
+    { "id": "industrial", "name": "工业废水" },
+    { "id": "livestock", "name": "养殖废水" },
+    { "id": "blackodorous", "name": "黑臭 / 发绿水体" },
+    { "id": "dumping", "name": "垃圾倾倒" },
+    { "id": "construction", "name": "施工泥浆水" },
+    { "id": "oil", "name": "油污漂浮" },
+    { "id": "unknown", "name": "不明" }
+  ],
+  "reportRules": {
+    "minLevelForAutoReport": "R2",
+    "minConfidenceForAutoReport": "medium",
+    "maxGeoPrecisionMeters": 50,
+    "requireRealName": true,
+    "description": "只有等级≥R2、置信度≥中、已实名、定位精度≤50米且用户开启自动上报时，才自动上报政府部门。"
+  },
+  "escalation": {
+    "radiusMeters": 1000,
+    "windowHours": 72,
+    "distinctUserThreshold": 3,
+    "description": "同一水体 1 公里内 72 小时内被 3 位不同用户独立报告，工单自动提级。"
+  },
+  "rankRules": {
+    "dailyCountLimit": 5,
+    "dedupRadiusMeters": 1000,
+    "dedupWindowHours": 24,
+    "minActiveUsersForCityBoard": 5,
+    "description": "同一水体 1 公里内 24 小时重复上报只计 1 条；单用户每日计入上限 5 条；活跃用户少于 5 人的城市榜隐藏。"
+  }
+}

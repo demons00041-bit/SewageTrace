@@ -1,0 +1,46 @@
+# ===== Android / Gradle 构建产物 =====
+*.iml
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+.kotlin/
+local.properties
+local.properties.mine
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# ===== IDE =====
+.idea/
+*.hprof
+*.jks
+*.keystore
+
+# ===== 网关运行时数据（含令牌哈希，不得入库）=====
+gateway/data/
+gateway/node_modules/
+gateway/.env
+*.log
+
+# ===== 系统 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 本地工具链（体积巨大，绝不入库）=====
+avd/
+gradle-home/
+gradle-verify-home/
+_verify/
+_ship/
+_E_/
+_EMPTY_/
+build-output/
+
+# ===== 开发过程中的临时脚本 =====
+*.ps1.txt
+errs.txt
+ui.xml

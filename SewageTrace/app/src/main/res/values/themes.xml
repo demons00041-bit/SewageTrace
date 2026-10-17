@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      AppCompatActivity 要求 Theme.AppCompat 系主题（per-app language 依赖 AppCompatDelegate），
+      因此把父主题从 android:Theme.Material.NoActionBar 换成 Theme.AppCompat.DayNight.NoActionBar。
+      Compose 负责全部实际绘制，这里只提供窗口级属性。
+    -->
+    <style name="Theme.SewageTrace" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#0B3B47</item>
+        <item name="android:navigationBarColor">#0B3B47</item>
+        <item name="android:windowBackground">#0B1418</item>
+    </style>
+</resources>

@@ -1,0 +1,16 @@
+﻿# Gradle
+.gradle/
+build/
+local.properties
+local.properties.mine
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+.kotlin/
+
+# OS
+.DS_Store
+Thumbs.db

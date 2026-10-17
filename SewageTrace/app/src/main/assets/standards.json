@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-15",
+  "notice": "本文件是演示数据骨架。所有 value 字段必须由使用者从标准原文人工核对后填写，document.xml 中任何一条缺 clause（条款/表号）即视为非法数据，App 启动时会标记为“待核验”。",
+  "standards": [
+    {
+      "sourceId": "GB3838-2002",
+      "standardNo": "GB 3838-2002",
+      "title": "地表水环境质量标准",
+      "version": "2002",
+      "amendment": null,
+      "issuedAt": "2002-04-28",
+      "effectiveAt": "2002-06-01",
+      "issuer": "原国家环境保护总局 / 国家质量监督检验检疫总局",
+      "role": "送检报告对照的参考分类",
+      "url": "https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/shjbh/shjzlbz/200206/t20020601_66497.shtml",
+      "verified": false,
+      "items": [
+        { "parameter": "pH", "unit": "无量纲", "classI": null, "classII": null, "classIII": null, "classIV": null, "classV": null, "clause": null, "note": "待从原文表1核验后填写" },
+        { "parameter": "溶解氧（DO，≥）", "unit": "mg/L", "classI": null, "classII": null, "classIII": null, "classIV": null, "classV": null, "clause": null, "note": "待核验" },
+        { "parameter": "高锰酸盐指数", "unit": "mg/L", "classI": null, "classII": null, "classIII": null, "classIV": null, "classV": null, "clause": null, "note": "待核验" },
+        { "parameter": "化学需氧量（COD）", "unit": "mg/L", "classI": null, "classII": null, "classIII": null, "classIV": null, "classV": null, "clause": null, "note": "待核验" },
+        { "parameter": "氨氮（NH3-N）", "unit": "mg/L", "classI": null, "classII": null, "classIII": null, "classIV": null, "classV": null, "clause": null, "note": "待核验" },
+        { "parameter": "总磷（以P计）", "unit": "mg/L", "classI": null, "classII": null, "classIII": null, "classIV": null, "classV": null, "clause": null, "note": "待核验（湖、库另有规定）" }
+      ]
+    },
+    {
+      "sourceId": "GB18918-2002",
+      "standardNo": "GB 18918-2002",
+      "title": "城镇污水处理厂污染物排放标准",
+      "version": "2002",
+      "amendment": "2025年修改单",
+      "issuedAt": "2002-12-24",
+      "effectiveAt": "2003-07-01",
+      "issuer": "国家环境保护总局 / 国家质量监督检验检疫总局",
+      "role": "污水处理厂 POI 的适用标准说明",
+      "url": "https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/shjbh/shjzlbz/200301/t20030101_66550.shtml",
+      "verified": false,
+      "items": [
+        { "parameter": "pH", "unit": "无量纲", "grade1A": null, "grade1B": null, "clause": null, "note": "待核验" },
+        { "parameter": "化学需氧量（COD）", "unit": "mg/L", "grade1A": null, "grade1B": null, "clause": null, "note": "待核验" },
+        { "parameter": "五日生化需氧量（BOD5）", "unit": "mg/L", "grade1A": null, "grade1B": null, "clause": null, "note": "待核验" },
+        { "parameter": "悬浮物（SS）", "unit": "mg/L", "grade1A": null, "grade1B": null, "clause": null, "note": "待核验" },
+        { "parameter": "氨氮", "unit": "mg/L", "grade1A": null, "grade1B": null, "clause": null, "note": "待核验" },
+        { "parameter": "总磷（以P计）", "unit": "mg/L", "grade1A": null, "grade1B": null, "clause": null, "note": "待核验" }
+      ]
+    },
+    {
+      "sourceId": "GB8978-1996",
+      "standardNo": "GB 8978-1996",
+      "title": "污水综合排放标准",
+      "version": "1996",
+      "amendment": null,
+      "issuedAt": "1996-10-04",
+      "effectiveAt": "1998-01-01",
+      "issuer": "国家环境保护局 / 国家技术监督局",
+      "role": "分级原则说明，App 不据其产出任何结论",
+      "url": "https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/shjbh/shjzlbz/199801/t19980101_66462.shtml",
+      "verified": false,
+      "items": [
+        { "parameter": "分级原则", "unit": "—", "value": "排入GB3838Ⅲ类水域执行一级标准；排入Ⅳ、Ⅴ类水域执行二级标准；排入有二级处理厂的城镇排水系统执行三级标准", "clause": "4.1", "note": "禁止新建排污口的区域见4.1.2" }
+      ]
+    },
+    {
+      "sourceId": "GB3097-1997",
+      "standardNo": "GB 3097-1997",
+      "title": "海水水质标准",
+      "version": "1997",
+      "amendment": null,
+      "issuedAt": "1997-12-03",
+      "effectiveAt": "1998-07-01",
+      "issuer": "国家环境保护局 / 国家技术监督局",
+      "role": "沿海城市 POI 卡片说明",
+      "url": "https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/shjbh/shjzlbz/199801/t19980101_66461.shtml",
+      "verified": false,
+      "items": [
+        { "parameter": "第一类至第四类海水水质分类", "unit": "—", "value": "按海域功能划分为四类", "clause": null, "note": "待核验条款号" }
+      ]
+    },
+    {
+      "sourceId": "BLACKODOR-GUIDE",
+      "standardNo": "黑臭水体整治相关指南",
+      "title": "城市黑臭水体整治技术指南（住建部/生态环境部）",
+      "version": "现行",
+      "amendment": null,
+      "issuedAt": null,
+      "effectiveAt": null,
+      "issuer": "住房和城乡建设部 / 生态环境部",
+      "role": "“黑臭”术语解释",
+      "url": null,
+      "verified": false,
+      "items": [
+        { "parameter": "术语", "unit": "—", "value": "“黑臭”指水体呈令人不快的颜色并散发异味，其判定依赖监测指标与感官，本 App 仅作术语解释", "clause": null, "note": "待核验" }
+      ]
+    }
+  ]
+}

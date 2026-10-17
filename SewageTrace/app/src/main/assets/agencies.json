@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-15",
+  "notice": "演示用机构数据，坐标与电话为示意值，已核验状态为 false。真实部署必须替换为开放数据源 + 人工核验，并在卡片上展示核验日期。",
+  "attribution": "底图 © OpenStreetMap contributors, ODbL 1.0",
+  "defaultCenter": { "lat": 31.2304, "lng": 121.4737, "city": "上海市" },
+  "agencies": [
+    { "id": "gov-she-001", "name": "上海市生态环境局", "type": "GOVERNMENT", "subType": "市级主管部门", "address": "上海市黄浦区人民大道200号", "phone": "021-12345", "hours": "周一至周五 09:00-17:00", "lat": 31.2323, "lng": 121.4751, "source": "开放数据（演示占位）", "verifiedAt": null, "verified": false },
+    { "id": "gov-she-002", "name": "黄浦区生态环境局", "type": "GOVERNMENT", "subType": "区级主管部门", "address": "上海市黄浦区中山东一路", "phone": "021-12369", "hours": "周一至周五 09:00-17:00", "lat": 31.2380, "lng": 121.4890, "source": "开放数据（演示占位）", "verifiedAt": null, "verified": false },
+    { "id": "gov-she-003", "name": "徐汇区生态环境局执法大队", "type": "GOVERNMENT", "subType": "执法单位", "address": "上海市徐汇区漕溪北路", "phone": "021-12369", "hours": "周一至周五 09:00-17:00", "lat": 31.1880, "lng": 121.4370, "source": "开放数据（演示占位）", "verifiedAt": null, "verified": false },
+    { "id": "gov-pudong-001", "name": "浦东新区生态环境局", "type": "GOVERNMENT", "subType": "区级主管部门", "address": "上海市浦东新区世纪大道", "phone": "021-12369", "hours": "周一至周五 09:00-17:00", "lat": 31.2180, "lng": 121.5440, "source": "开放数据（演示占位）", "verifiedAt": null, "verified": false },
+    { "id": "wwtp-001", "name": "白龙港污水处理厂", "type": "WWTP", "subType": "城镇污水处理厂", "address": "上海市浦东新区白龙港", "phone": "021-00000000", "hours": "全天运行（参观需预约）", "lat": 31.1600, "lng": 121.7300, "source": "演示占位", "verifiedAt": null, "verified": false, "standardRef": "GB 18918-2002" },
+    { "id": "wwtp-002", "name": "石洞口污水处理厂", "type": "WWTP", "subType": "城镇污水处理厂", "address": "上海市宝山区石洞口", "phone": "021-00000000", "hours": "全天运行（参观需预约）", "lat": 31.4050, "lng": 121.4790, "source": "演示占位", "verifiedAt": null, "verified": false, "standardRef": "GB 18918-2002" },
+    { "id": "station-001", "name": "苏州河水质自动监测站", "type": "STATION", "subType": "水质自动监测站", "address": "上海市普陀区苏州河沿岸", "phone": null, "hours": "自动运行，不对外开放", "lat": 31.2470, "lng": 121.4260, "source": "演示占位", "verifiedAt": null, "verified": false },
+    { "id": "station-002", "name": "黄浦江上游水质监测断面", "type": "STATION", "subType": "水质监测断面", "address": "上海市闵行区", "phone": null, "hours": "自动运行，不对外开放", "lat": 31.0500, "lng": 121.3800, "source": "演示占位", "verifiedAt": null, "verified": false },
+    { "id": "lab-001", "name": "上海市环境监测中心", "type": "LAB", "subType": "可送检检测机构", "address": "上海市徐汇区三江路", "phone": "021-00000001", "hours": "周一至周五 09:00-16:30", "lat": 31.1700, "lng": 121.4400, "source": "演示占位", "verifiedAt": null, "verified": false, "accredited": true, "tests": ["pH", "化学需氧量(COD)", "氨氮", "总磷", "溶解氧", "重金属", "粪大肠菌群", "感官与色度"], "fee": "面议", "materials": ["身份证", "送检样品（≥500mL）", "采样说明"] },
+    { "id": "lab-002", "name": "华东水质检测有限公司", "type": "LAB", "subType": "可送检检测机构", "address": "上海市浦东新区张江路", "phone": "021-00000002", "hours": "周一至周六 08:30-18:00", "lat": 31.2050, "lng": 121.5880, "source": "演示占位", "verifiedAt": null, "verified": false, "accredited": true, "tests": ["pH", "化学需氧量(COD)", "氨氮", "总磷", "溶解氧", "重金属"], "fee": "180 元起/项", "materials": ["身份证", "送检样品（≥500mL）, 需冷藏保存"] },
+    { "id": "lab-003", "name": "申城第三方检验检测中心", "type": "LAB", "subType": "可送检检测机构", "address": "上海市静安区共和新路", "phone": "021-00000003", "hours": "周一至周五 09:00-17:00", "lat": 31.2560, "lng": 121.4560, "source": "演示占位", "verifiedAt": null, "verified": false, "accredited": false, "tests": ["pH", "感官与色度", "化学需氧量(COD)"], "fee": "120 元起/项", "materials": ["送检样品（≥300mL）"] }
+  ]
+}
