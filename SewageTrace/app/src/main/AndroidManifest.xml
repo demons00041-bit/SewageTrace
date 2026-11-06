@@ -12,6 +12,13 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- Android 11+ 包可见性：拍照要能解析到系统相机 -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"

@@ -1,5 +1,7 @@
 package com.sewagetrace.app.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -51,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sewagetrace.app.R
+import com.sewagetrace.app.ai.CameraCapture
 import com.sewagetrace.app.ai.DemoScene
 import com.sewagetrace.app.data.AnalysisMode
 import com.sewagetrace.app.data.SubmitOutcome
@@ -114,7 +119,9 @@ fun DetectScreen(vm: AppViewModel) {
                             delay(60)
                             p.value = (p.value + 0.040f).coerceAtMost(1f)
                         }
-                        vm.runAnalysis()
+                        // 识别通常已由 shoot()/useRealPhoto() 启动，这里只补一次兜底，
+                        // 避免同一张照片被分析两遍（云端模式下会重复计费）。
+                        if (vm.analysis == null && !vm.analyzing) vm.runAnalysis()
                     }
                     LinearProgressIndicator(
                         progress = { p.value },
@@ -187,6 +194,16 @@ fun DetectScreen(vm: AppViewModel) {
                     }
                     Switch(checked = vm.autoReport, onCheckedChange = { vm.updateAutoReport(it) })
                 }
+                Divider2()
+                Spacer(Modifier.height(10.dp))
+                OutlinedTextField(
+                    value = vm.waterbody,
+                    onValueChange = { vm.waterbody = it.take(48) },
+                    label = { Text(stringResource(R.string.waterbody), fontSize = 12.sp) },
+                    placeholder = { Text(stringResource(R.string.waterbody_hint), fontSize = 12.sp) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Divider2()
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.loc_precision), fontSize = 13.sp)
@@ -276,9 +293,10 @@ private fun PhotoPreview(vm: AppViewModel) {
                 .clip(RoundedCornerShape(8.dp)).background(Color.Black.copy(alpha = 0.55f))
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            val sceneTitle = vm.scene?.let { stringResource(it.titleRes) } ?: ""
+            val sceneTitle = vm.scene?.let { stringResource(it.titleRes) }
             Text(
-                stringResource(R.string.scene_sample_tag, sceneTitle),
+                if (sceneTitle != null) stringResource(R.string.scene_sample_tag, sceneTitle)
+                else stringResource(R.string.real_photo_tag),
                 fontSize = 10.sp, color = Color.White
             )
         }
@@ -387,7 +405,8 @@ private fun OutcomeCard(vm: AppViewModel, o: SubmitOutcome) {
         }
         is SubmitOutcome.Failed -> {
             title = ctx.getString(R.string.outcome_failed)
-            body = o.detail
+            body = if (o.args.isEmpty()) ctx.getString(o.reasonRes)
+            else ctx.getString(o.reasonRes, *o.args.toTypedArray())
             color = MaterialTheme.colorScheme.error
         }
     }
@@ -421,6 +440,68 @@ private fun OutcomeCard(vm: AppViewModel, o: SubmitOutcome) {
 
 @Composable
 private fun DetectIdle(vm: AppViewModel) {
+    val ctx = LocalContext.current
+    var denied by remember { mutableStateOf(false) }
+    var notice by remember { mutableStateOf<Int?>(null) }
+    var pendingFile by remember { mutableStateOf<java.io.File?>(null) }
+
+    // 相机返回：确认文件真的写入了才进入识别
+    val takePicture = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { res ->
+        val f = pendingFile
+        pendingFile = null
+        if (f != null && CameraCapture.isValidCapture(f)) {
+            vm.useRealPhoto(f.absolutePath)
+        } else {
+            f?.delete()
+            if (res.resultCode != android.app.Activity.RESULT_CANCELED) {
+                notice = R.string.capture_failed
+            }
+        }
+    }
+
+    // 相册选图：复制进应用目录，避免临时授权过期后图片失效
+    val pickImage = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            val path = CameraCapture.copyFromUri(ctx, uri)
+            if (path != null) vm.useRealPhoto(path) else notice = R.string.capture_failed
+        }
+    }
+
+    fun launchCamera() {
+        notice = null
+        runCatching {
+            val f = CameraCapture.newFile(ctx)
+            val uri = CameraCapture.uriFor(ctx, f)
+            pendingFile = f
+            takePicture.launch(CameraCapture.intent(ctx, uri))
+        }.onFailure {
+            pendingFile = null
+            notice = R.string.camera_unavailable
+        }
+    }
+
+    val permission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            denied = false
+            launchCamera()
+        } else {
+            denied = true
+        }
+    }
+
+    fun onCaptureClick() {
+        val ok = androidx.core.content.ContextCompat.checkSelfPermission(
+            ctx, android.Manifest.permission.CAMERA
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        if (ok) launchCamera() else permission.launch(android.Manifest.permission.CAMERA)
+    }
+
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)
     ) {
@@ -448,7 +529,7 @@ private fun DetectIdle(vm: AppViewModel) {
         Box(
             Modifier.fillMaxWidth().height(210.dp).clip(RoundedCornerShape(22.dp))
                 .background(Brush.linearGradient(listOf(Water700, Color(0xFF0E5A6B))))
-                .clickable { vm.shootRandom() }
+                .clickable { onCaptureClick() }
         ) {
             Row(Modifier.fillMaxSize().padding(22.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
@@ -473,6 +554,57 @@ private fun DetectIdle(vm: AppViewModel) {
                         modifier = Modifier.size(40.dp)
                     )
                 }
+            }
+        }
+
+        Spacer(Modifier.height(10.dp))
+        OutlinedButton(
+            onClick = { pickImage.launch("image/*") },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Icon(Icons.Filled.PhotoLibrary, null, modifier = Modifier.size(17.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.detect_gallery), fontSize = 13.sp)
+        }
+
+        // 权限被拒 / 相机不可用 / 保存失败的提示
+        if (denied) {
+            Spacer(Modifier.height(10.dp))
+            CardBox(container = Color(0xFFF59E0B).copy(alpha = 0.10f)) {
+                Column(Modifier.padding(14.dp)) {
+                    Text(
+                        stringResource(R.string.permission_needed_title),
+                        fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFB45309)
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        stringResource(R.string.permission_needed_body),
+                        fontSize = 11.sp, lineHeight = 17.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    TextButton(
+                        onClick = {
+                            val i = android.content.Intent(
+                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                android.net.Uri.fromParts("package", ctx.packageName, null)
+                            )
+                            runCatching { ctx.startActivity(i) }
+                        },
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+                    ) { Text(stringResource(R.string.permission_open_settings), fontSize = 12.sp) }
+                }
+            }
+        }
+        notice?.let { res ->
+            Spacer(Modifier.height(10.dp))
+            CardBox(container = MaterialTheme.colorScheme.error.copy(alpha = 0.10f)) {
+                Text(
+                    stringResource(res),
+                    Modifier.padding(14.dp), fontSize = 11.5.sp, lineHeight = 17.sp,
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
 
@@ -515,7 +647,7 @@ private fun DetectIdle(vm: AppViewModel) {
         }
 
         Spacer(Modifier.height(16.dp))
-        SectionTitle(stringResource(R.string.pick_scene), stringResource(R.string.pick_scene_sub))
+        SectionTitle(stringResource(R.string.detect_demo_title), stringResource(R.string.pick_scene_sub))
         Spacer(Modifier.height(8.dp))
         DemoScene.entries.forEach { s ->
             SceneRow(s) { vm.shoot(s) }

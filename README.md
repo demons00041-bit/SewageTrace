@@ -17,7 +17,7 @@
 
 | 地图与预约 | 排行榜 | 我的 |
 |---|---|---|
-| ![地图](screenshots/r15_map_en.png) | ![排行](screenshots/r20_rank_en.png) | ![我的](screenshots/r27_profile_en.png) |
+| ![地图](screenshots/r12_map_zh.png) | ![排行](screenshots/r13_community_zh.png) | ![我的](screenshots/r10_profile_en.png) |
 
 （截图目录共 34 张，覆盖中英双语、云端识别、离线回退、低置信度拦截等场景）
 

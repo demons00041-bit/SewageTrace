@@ -2,4 +2,6 @@
 <paths>
     <files-path name="photos" path="photos/" />
     <cache-path name="cache" path="." />
+    <!-- DemoPhotoFactory.photoDir() 落在 getExternalFilesDir(PICTURES)/photos -->
+    <external-files-path name="ext_photos" path="Pictures/photos/" />
 </paths>

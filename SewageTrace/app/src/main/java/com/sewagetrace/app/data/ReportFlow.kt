@@ -36,7 +36,7 @@ object ReportFlow {
         locationPrecision: Int = 50,
         now: Long = System.currentTimeMillis()
     ): SubmitOutcome {
-        val user = DemoRepo.currentUser() ?: return SubmitOutcome.Failed("not signed in")
+        val user = DemoRepo.currentUser() ?: return SubmitOutcome.Failed(R.string.err_not_signed_in)
 
         // 1) 低置信度 / 非污水：阻止上报，只保留本地结论
         if (analysis.confidence == Confidence.LOW) {
@@ -57,7 +57,9 @@ object ReportFlow {
             it.userId == user.id && it.status != ReportStatus.DRAFT &&
                 now - it.createdAt < DAY && it.createdAt <= now
         }
-        if (today >= DAILY_LIMIT) return SubmitOutcome.Failed("daily limit reached ($DAILY_LIMIT/day)")
+        if (today >= DAILY_LIMIT) {
+            return SubmitOutcome.Failed(R.string.err_daily_limit, listOf(DAILY_LIMIT))
+        }
 
         // 3) 分级路由：R0/R1 不自动上报
         val autoAllowed = analysis.level == SeverityLevel.R2 ||
@@ -82,7 +84,9 @@ object ReportFlow {
             it.userId == user.id && it.status != ReportStatus.DRAFT && it.status != ReportStatus.REJECTED &&
                 now - it.createdAt <= DAY && TicketService.distMeters(it.lat, it.lng, lat, lng) <= 200
         }
-        if (dup != null) return SubmitOutcome.Failed("duplicate within 24h: ${dup.waterbodyName}")
+        if (dup != null) {
+            return SubmitOutcome.Failed(R.string.err_duplicate, listOf(dup.waterbodyName))
+        }
 
         val report = draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, now, ReportStatus.REPORTED)
             .copy(precision = locationPrecision)
@@ -131,9 +135,10 @@ object ReportFlow {
 
     /** 详情页"手动上报"：把一条草稿升级为工单 */
     fun submitDraft(reportId: String, now: Long = System.currentTimeMillis()): SubmitOutcome {
-        val user = DemoRepo.currentUser() ?: return SubmitOutcome.Failed("not signed in")
-        val r = DemoRepo.reports.firstOrNull { it.id == reportId } ?: return SubmitOutcome.Failed("record missing")
-        if (r.status != ReportStatus.DRAFT) return SubmitOutcome.Failed("already reported")
+        val user = DemoRepo.currentUser() ?: return SubmitOutcome.Failed(R.string.err_not_signed_in)
+        val r = DemoRepo.reports.firstOrNull { it.id == reportId }
+            ?: return SubmitOutcome.Failed(R.string.err_record_missing)
+        if (r.status != ReportStatus.DRAFT) return SubmitOutcome.Failed(R.string.err_already_reported)
         if (r.confidence == Confidence.LOW) return SubmitOutcome.Blocked(R.string.blocked_low_conf)
         if (r.level == SeverityLevel.R0 || r.level == SeverityLevel.R1) {
             val updated = r.copy(status = ReportStatus.REPORTED, createdAt = now)

@@ -13,6 +13,7 @@ import com.sewagetrace.app.ai.CloudClassifier
 import com.sewagetrace.app.ai.CloudException
 import com.sewagetrace.app.ai.DemoPhotoFactory
 import com.sewagetrace.app.ai.DemoScene
+import com.sewagetrace.app.ai.ScenePrior
 import com.sewagetrace.app.data.AnalysisMode
 import com.sewagetrace.app.data.AppContextHolder
 import com.sewagetrace.app.data.DemoRepo
@@ -94,12 +95,22 @@ class AppViewModel : ViewModel() {
         tick++
     }
 
-    fun register(nickname: String, phone: String, city: String) {
-        DemoRepo.register(nickname, phone, city)
+    fun register(nickname: String, studentEmail: String, city: String) {
+        DemoRepo.register(nickname, studentEmail, city)
         superLoadScene()
         screen = Screen.Home(Tab.DETECT)
         stack = emptyList()
         tick++
+    }
+
+    /** Google 登录成功后的入口：有账号就登进去，没有就用校邮箱建一个 */
+    fun signInWithSchoolEmail(email: String, displayName: String) {
+        val existing = DemoRepo.findByEmail(email)
+        if (existing != null) {
+            login(existing.id)
+        } else {
+            register(displayName.ifBlank { email.substringBefore('@') }, email, "Kuala Lumpur")
+        }
     }
 
     fun logout() {
@@ -198,20 +209,41 @@ class AppViewModel : ViewModel() {
     }
 
     /**
+     * 使用真实相机/相册拿到的照片进入识别。
+     *
+     * 与演示场景的区别：没有场景先验（scene = null），
+     * 本机引擎完全靠图像特征打分，云端引擎直接看这张图。
+     */
+    fun useRealPhoto(path: String) {
+        analysis = null
+        outcome = null
+        fallback = null
+        analyzingProgress = 0
+        analyzing = false
+        scene = null
+        photoPath = path
+        waterbody = ""
+        note = ""
+        phase = DetectPhase.SHOOTING
+        tick++
+        runAnalysis()
+    }
+
+    /**
      * 执行识别。引擎由设置决定（自动 / 仅本机 / 仅云端），
      * 云端失败由 AutoClassifier 回退本机并给出原因。
      */
     fun runAnalysis() {
         val p = photoPath ?: return
-        val s = scene ?: return
         if (analyzing) return
+        val prior = scene?.prior ?: ScenePrior.none()
         analyzing = true
         phase = DetectPhase.ANALYZING
         analyzingProgress = 10
         tick++
         viewModelScope.launch {
             val r = runCatching {
-                withContext(Dispatchers.IO) { AutoClassifier(s.prior).run(p) }
+                withContext(Dispatchers.IO) { AutoClassifier(prior).run(p) }
             }
             analyzingProgress = 100
             analyzing = false
@@ -230,11 +262,15 @@ class AppViewModel : ViewModel() {
         val a = analysis ?: return
         val p = photoPath ?: return
         val s = scene
+        // 真实照片没有场景默认水体名，留空则用"未命名水体"
+        val name = waterbody.ifBlank {
+            s?.waterbody ?: AppContextHolder.ctx.getString(R.string.waterbody_unnamed)
+        }
         val res = ReportFlow.submit(
             sceneId = s?.id,
             analysis = a,
             photoPath = p,
-            waterbody = waterbody.ifBlank { s?.waterbody ?: "" },
+            waterbody = name,
             lat = DEMO_LAT,
             lng = DEMO_LNG,
             note = note,

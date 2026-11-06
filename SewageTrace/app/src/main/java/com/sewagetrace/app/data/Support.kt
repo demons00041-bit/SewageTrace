@@ -23,8 +23,14 @@ sealed class SubmitOutcome {
         val escalated: Boolean
     ) : SubmitOutcome()
 
-    /** 失败（IO 错误等），[detail] 是原始异常信息，仅用于排障 */
-    data class Failed(val detail: String) : SubmitOutcome()
+    /**
+     * 失败（未登录 / 限流 / 重复 / 记录缺失）。
+     * 文案统一走字符串资源，[args] 用于填充占位符，保证中英文都能正确显示。
+     */
+    data class Failed(
+        @StringRes val reasonRes: Int,
+        val args: List<Any> = emptyList()
+    ) : SubmitOutcome()
 }
 
 /** 识别引擎模式 */

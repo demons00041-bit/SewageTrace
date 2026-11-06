@@ -125,9 +125,14 @@ data class User(
     val realName: Boolean,
     val anonymous: Boolean,
     val createdAt: Long,
-    val isDemoUser: Boolean = false
+    val isDemoUser: Boolean = false,
+    /** UM 校邮箱，形如 a12345678@siswa.um.edu.my */
+    val studentEmail: String = ""
 ) {
     val isMinor: Boolean get() = false
+
+    /** 学号部分（邮箱 @ 前），个人页展示用 */
+    val matric: String get() = studentEmail.substringBefore('@')
 }
 
 data class Report(

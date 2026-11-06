@@ -77,20 +77,25 @@ object DemoRepo {
         prefs.edit().remove("session").apply()
     }
 
-    fun register(nickname: String, phone: String, city: String): User {
+    fun register(nickname: String, studentEmail: String, city: String): User {
         val u = User(
             id = "u-" + System.currentTimeMillis().toString(36),
             nickname = nickname,
-            phone = phone,
+            phone = studentEmail.substringBefore('@'),
             city = city,
             realName = true,
             anonymous = false,
-            createdAt = System.currentTimeMillis()
+            createdAt = System.currentTimeMillis(),
+            studentEmail = studentEmail
         )
         users.add(u)
         login(u.id)
         return u
     }
+
+    /** 按校邮箱找人；没注册过就返回 null（由调用方决定是否自动注册） */
+    fun findByEmail(email: String): User? =
+        users.firstOrNull { it.studentEmail.equals(email, ignoreCase = true) }
 
     fun updateUser(u: User) {
         val i = users.indexOfFirst { it.id == u.id }
@@ -115,11 +120,11 @@ object DemoRepo {
         val hour = 3_600_000L
 
         // 演示用户（吉隆坡本地昵称）
-        users += User("u-demo", "River Patrol Aunty", "012****0001", "Kuala Lumpur", true, false, now - 200 * day, isDemoUser = true)
-        users += User("u-lin", "Aisyah R.", "012****0002", "Kuala Lumpur", true, false, now - 180 * day, isDemoUser = true)
-        users += User("u-wang", "KL River Watch", "012****0003", "Petaling Jaya", true, false, now - 150 * day, isDemoUser = true)
-        users += User("u-chen", "Tan M. H.", "012****0004", "Kuala Lumpur", true, true, now - 120 * day, isDemoUser = true)
-        users += User("u-zhao", "Faizal A.", "012****0005", "Shah Alam", true, false, now - 90 * day, isDemoUser = true)
+        users += User("u-demo", "River Patrol Aunty", "012****0001", "Kuala Lumpur", true, false, now - 200 * day, isDemoUser = true, studentEmail = "s2000001@siswa.um.edu.my")
+        users += User("u-lin", "Aisyah R.", "012****0002", "Kuala Lumpur", true, false, now - 180 * day, isDemoUser = true, studentEmail = "s2000002@siswa.um.edu.my")
+        users += User("u-wang", "KL River Watch", "012****0003", "Petaling Jaya", true, false, now - 150 * day, isDemoUser = true, studentEmail = "s2000003@siswa.um.edu.my")
+        users += User("u-chen", "Tan M. H.", "012****0004", "Kuala Lumpur", true, true, now - 120 * day, isDemoUser = true, studentEmail = "s2000004@siswa.um.edu.my")
+        users += User("u-zhao", "Faizal A.", "012****0005", "Shah Alam", true, false, now - 90 * day, isDemoUser = true, studentEmail = "s2000005@siswa.um.edu.my")
 
         // ------- 虚构机构（坐标为吉隆坡示意位置，不指向任何真实建筑） -------
         agencies += Agency(
