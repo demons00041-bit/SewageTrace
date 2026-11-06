@@ -60,7 +60,7 @@ gradlew.bat :app:assembleDebug    # Windows
 │  │  ├─ model/              数据类 + 污染等级 R0–R4
 │  │  └─ ui/                 4 个 Tab + 详情页
 │  ├─ app/src/main/assets/   机构、标准、评分规则、工单流程（JSON 配置）
-│  └─ app/src/main/res/      英文（默认）+ 中文，各 553 条字符串
+│  └─ app/src/main/res/      英文（默认）+ 中文，各 584 条字符串
 │
 ├─ gateway/                  DeepSeek 反代网关（Node.js，零依赖）
 │  ├─ server.js              转发 + 限流 + 模型白名单 + 令牌管理
@@ -80,10 +80,24 @@ gradlew.bat :app:assembleDebug    # Windows
 
 | Tab | 功能 |
 |---|---|
-| **识别污水** | 拍照 → 污染指数(0–100) + 等级 R0–R4 + 置信度 + 疑似类型 + 证据维度 → 确认上报 |
+| **识别污水** | 拍照（真实相机）/ 从相册选择 → 污染指数(0–100) + 等级 R0–R4 + 置信度 + 疑似类型 + 证据维度 → 确认上报 |
 | **地图** | 机构筛选（政府/送检/污水厂/监测站）、按距离排序、机构详情、**预约线下送检** |
 | **社区** | 同城/全国排行榜（7/30/全部）、我的工单进度、全平台工单动态 |
 | **我的** | 资料统计、上报记录、我的预约、设置（语言/引擎/密钥/精度/匿名） |
+
+### 账号
+
+登录与注册只面向 Universiti Malaya 学生：
+
+- **登录**：`Sign in with Google`（UM Google 账号）
+- **注册**：必须填 `学号@siswa.um.edu.my`，其他域名一律拒绝
+- 另有 `Continue with demo account` 免注册入口，便于直接体验
+
+### 拍照
+
+`Take a photo` 会运行时申请 `CAMERA` 权限并调起系统相机（`ACTION_IMAGE_CAPTURE` +
+`FileProvider`）；拒绝授权时显示引导卡，可跳到应用设置重新开启。也可从相册选图，
+图片会被复制进应用私有目录后再识别。抓拍文件小于 1 KB 视为失败，不会送去识别。
 
 ### 污染等级
 
@@ -167,7 +181,8 @@ node test/forward.test.js # 12 项自测，不消耗真实额度
 | 后端 | 无，全本地 | 真实 API + 鉴权 |
 | 上报 | 只写本地工单 | 对接政务系统 / 12345 |
 | 政府处理 | 「模拟推进一阶段」按钮 | 真实状态流转 |
-| 照片 | Canvas 合成 | CameraX 实拍 + EXIF |
+| 照片 | Canvas 合成 / 系统相机实拍 | CameraX + EXIF |
+| 账号 | 演示用 Google 账号选择框 + 校邮箱格式校验 | 真实 Google OAuth + 学校 SSO 验证 |
 | 识别校准 | 未做 | 用实测报告建校准数据集 |
 | 持久化 | SharedPreferences，重装清空 | 数据库 + 云端同步 |
 
