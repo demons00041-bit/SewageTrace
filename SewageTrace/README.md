@@ -61,10 +61,22 @@ gradlew.bat :app:assembleDebug
 
 | Tab | 做什么 |
 |---|---|
-| **识别污水** Report | 拍照 → 识别 → 得到污染指数 + 等级 + 置信度 → 确认上报 |
+| **识别污水** Report | 拍照（真实相机/相册）→ 识别 → 污染指数 + 等级 + 置信度 → 确认上报 |
 | **地图** Map | 示意地图 + 机构筛选 + 机构详情 + 预约线下送检 |
 | **社区** Community | 同城/全国排行榜 + 我的工单治理进度 + 全平台动态 |
 | **我的** Me | 资料、数据统计、上报记录、我的预约、设置 |
+
+### 账号：只面向马大学生
+
+- 登录页只有 `Sign in with Google`（UM Google 账号）
+- 注册必须填 `学号@siswa.um.edu.my`，其他域名被拒绝
+- `Continue with demo account` 免注册进入演示账号
+
+### 拍照
+
+`Take a photo` 运行时申请 `CAMERA`，用 `ACTION_IMAGE_CAPTURE` + `FileProvider`
+调起系统相机；拒绝授权时显示引导卡，可跳应用设置重开。也可从相册选图（复制进
+应用私有目录）。抓拍文件小于 1 KB 视为失败，不送去识别。
 
 ### 污染等级 R0–R4
 
@@ -106,7 +118,8 @@ SewageTrace/
 │  │  │  ├─ OnDeviceClassifier.kt   本机规则引擎，纯 Kotlin 图像特征加权
 │  │  │  ├─ CloudClassifier.kt      DeepSeek 云端视觉识别
 │  │  │  ├─ AutoClassifier.kt       自动模式：云端优先，失败回退本机
-│  │  │  └─ DemoPhotoFactory.kt     Canvas 合成演示照片（无真实相机依赖）
+│  │  │  ├─ CameraCapture.kt        系统相机拍照 + 相册导入（FileProvider）
+│  │  │  └─ DemoPhotoFactory.kt     Canvas 合成演示照片（演示场景用）
 │  │  │
 │  │  ├─ data/
 │  │  │  ├─ DemoRepo.kt             全局仓库（SharedPreferences 持久化）
@@ -230,7 +243,8 @@ res/values-zh/strings.xml   中文
 | 后端 | 无，全部本地 | 需要真实 API + 鉴权 |
 | 上报 | 只写本地工单 | 对接政务系统 / 12345 |
 | 政府处理 | 「模拟推进一阶段」按钮 | 真实状态流转 |
-| 照片 | Canvas 合成 | CameraX 实拍 + EXIF |
+| 照片 | 系统相机实拍 / 相册导入 | CameraX + EXIF |
+| 账号 | Google 账号选择框 + 校邮箱格式校验 | 真实 Google OAuth + 学校 SSO 验证 |
 | 识别校准 | 未做 | 用实测报告做校准数据集 |
 | 数据持久化 | SharedPreferences，重装即清空 | 数据库 + 云端同步 |
 
