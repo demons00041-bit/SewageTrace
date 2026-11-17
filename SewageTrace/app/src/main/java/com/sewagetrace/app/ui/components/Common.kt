@@ -117,14 +117,21 @@ fun SeverityChip(level: SeverityLevel, text: String? = null, small: Boolean = fa
     }
 }
 
+/**
+ * 等级全称。统一走 `grade_r*`，与 [com.sewagetrace.app.model.Severity] 及人工等级选择器同源。
+ *
+ * 注意：原实现用的是 `level_r*`，而 `level_r2/3/4` 的文案比 `grade_r*` 整体错位一档
+ * （level_r4=Heavy，grade_r4=Severe），同屏会出现「R4 Heavy」和「R4 Severe」并存。
+ * 这里统一到 grade_r*，等级枚举保持单点定义。
+ */
 @Composable
 fun levelName(level: SeverityLevel): String = stringResource(
     when (level) {
-        SeverityLevel.R4 -> R.string.level_r4
-        SeverityLevel.R3 -> R.string.level_r3
-        SeverityLevel.R2 -> R.string.level_r2
-        SeverityLevel.R1 -> R.string.level_r1
-        SeverityLevel.R0 -> R.string.level_r0
+        SeverityLevel.R4 -> R.string.grade_r4
+        SeverityLevel.R3 -> R.string.grade_r3
+        SeverityLevel.R2 -> R.string.grade_r2
+        SeverityLevel.R1 -> R.string.grade_r1
+        SeverityLevel.R0 -> R.string.grade_r0
     }
 )
 

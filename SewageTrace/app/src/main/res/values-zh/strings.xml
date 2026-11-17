@@ -661,4 +661,25 @@
     <string name="err_duplicate">24 小时内已上报过：%1$s</string>
     <string name="err_record_missing">该记录已不存在</string>
     <string name="err_already_reported">该记录已上报</string>
+
+    <!-- ===== 场景描述 + 人工等级（需求 CAP-01 / CAP-02） ===== -->
+    <string name="scene_desc_label">场景描述</string>
+    <string name="optional_tag">选填</string>
+    <string name="clear">清空</string>
+    <string name="scene_desc_hint">请描述拍摄场景，如：河道岸边、雨后排水口、工业区沉淀池、水面漂浮物情况等</string>
+    <string name="scene_desc_counter">%1$d/%2$d</string>
+    <string name="manual_level_label">污水等级</string>
+    <string name="ai_suggestion">AI 建议：%1$s</string>
+    <string name="manual_level_required">提交前请选择污水等级</string>
+    <string name="mlv_r0">未见</string>
+    <string name="mlv_r1">轻微</string>
+    <string name="mlv_r2">中度</string>
+    <string name="mlv_r3">重度</string>
+    <string name="mlv_r4">严重</string>
+
+    <string name="manual_level_row">人工等级</string>
+    <string name="ai_level_row">AI 等级</string>
+    <string name="level_ungraded">未分级</string>
+    <string name="level_mismatch_title">人工等级与 AI 判定不一致</string>
+    <string name="level_mismatch_note">两个等级都会保留以便追溯。上报路由取两者中更严重的一档，因此人工上调不会被忽略。</string>
 </resources>

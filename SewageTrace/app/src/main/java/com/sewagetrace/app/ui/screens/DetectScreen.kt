@@ -67,7 +67,9 @@ import com.sewagetrace.app.ui.AppViewModel
 import com.sewagetrace.app.ui.DetectPhase
 import com.sewagetrace.app.ui.components.CardBox
 import com.sewagetrace.app.ui.components.Divider2
+import com.sewagetrace.app.ui.components.ManualLevelPicker
 import com.sewagetrace.app.ui.components.ProgressBar
+import com.sewagetrace.app.ui.components.SceneDescriptionField
 import com.sewagetrace.app.ui.components.SectionTitle
 import com.sewagetrace.app.ui.components.SeverityChip
 import com.sewagetrace.app.ui.theme.Water300
@@ -205,7 +207,24 @@ fun DetectScreen(vm: AppViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 )
                 Divider2()
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(14.dp))
+                // 需求 CAP-01：场景描述（识别结果之下、提交之前，非必填）
+                SceneDescriptionField(
+                    value = vm.note,
+                    onValueChange = { vm.updateNote(it) }
+                )
+                Spacer(Modifier.height(16.dp))
+                Divider2()
+                Spacer(Modifier.height(14.dp))
+                // 需求 CAP-02：人工污水等级，必选
+                ManualLevelPicker(
+                    selected = vm.manualLevel,
+                    onSelect = { vm.updateManualLevel(it) },
+                    aiSuggestion = vm.analysis?.level
+                )
+                Spacer(Modifier.height(16.dp))
+                Divider2()
+                Spacer(Modifier.height(10.dp))
                 Text(stringResource(R.string.loc_precision), fontSize = 13.sp)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -235,9 +254,10 @@ fun DetectScreen(vm: AppViewModel) {
                         }
                     }
                 }
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(14.dp))
                 OutlinedButton(
                     onClick = { vm.submit() },
+                    enabled = vm.manualLevel != null,
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(14.dp)
                 ) {

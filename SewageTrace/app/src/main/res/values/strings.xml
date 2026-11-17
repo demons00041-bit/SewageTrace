@@ -657,4 +657,25 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="err_duplicate">Already reported within 24 hours: %1$s</string>
     <string name="err_record_missing">That record no longer exists</string>
     <string name="err_already_reported">This record has already been reported</string>
+
+    <!-- ===== 场景描述 + 人工等级（需求 CAP-01 / CAP-02） ===== -->
+    <string name="scene_desc_label">Scene description</string>
+    <string name="optional_tag">optional</string>
+    <string name="clear">Clear</string>
+    <string name="scene_desc_hint">Describe the scene: river bank, drain outlet after rain, industrial settling pond, floating debris, etc.</string>
+    <string name="scene_desc_counter">%1$d/%2$d</string>
+    <string name="manual_level_label">Sewage level</string>
+    <string name="ai_suggestion">AI suggests %1$s</string>
+    <string name="manual_level_required">Select a level before submitting</string>
+    <string name="mlv_r0">None</string>
+    <string name="mlv_r1">Slight</string>
+    <string name="mlv_r2">Moderate</string>
+    <string name="mlv_r3">Heavy</string>
+    <string name="mlv_r4">Severe</string>
+
+    <string name="manual_level_row">Manual level</string>
+    <string name="ai_level_row">AI level</string>
+    <string name="level_ungraded">Not graded</string>
+    <string name="level_mismatch_title">Manual level differs from the AI result</string>
+    <string name="level_mismatch_note">Both levels are kept for traceability. Routing follows the more severe of the two, so a manual upgrade can never be lost.</string>
 </resources>

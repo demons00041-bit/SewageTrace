@@ -7,6 +7,7 @@ import com.sewagetrace.app.model.Booking
 import com.sewagetrace.app.model.BookingStatus
 import com.sewagetrace.app.model.Confidence
 import com.sewagetrace.app.model.LeaderRow
+import com.sewagetrace.app.model.LevelSource
 import com.sewagetrace.app.model.Report
 import com.sewagetrace.app.model.ReportStatus
 import com.sewagetrace.app.model.SeverityLevel
@@ -33,6 +34,7 @@ object ReportFlow {
         lng: Double,
         note: String,
         autoReport: Boolean,
+        manualLevel: SeverityLevel? = null,
         locationPrecision: Int = 50,
         now: Long = System.currentTimeMillis()
     ): SubmitOutcome {
@@ -41,13 +43,13 @@ object ReportFlow {
         // 1) 低置信度 / 非污水：阻止上报，只保留本地结论
         if (analysis.confidence == Confidence.LOW) {
             DemoRepo.saveReport(
-                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, now, ReportStatus.DRAFT)
+                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, manualLevel, now, ReportStatus.DRAFT)
             )
             return SubmitOutcome.Blocked(R.string.blocked_low_conf)
         }
         if (analysis.isNonWater) {
             DemoRepo.saveReport(
-                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, now, ReportStatus.DRAFT)
+                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, manualLevel, now, ReportStatus.DRAFT)
             )
             return SubmitOutcome.Blocked(R.string.blocked_not_water)
         }
@@ -61,20 +63,19 @@ object ReportFlow {
             return SubmitOutcome.Failed(R.string.err_daily_limit, listOf(DAILY_LIMIT))
         }
 
-        // 3) 分级路由：R0/R1 不自动上报
-        val autoAllowed = analysis.level == SeverityLevel.R2 ||
-            analysis.level == SeverityLevel.R3 ||
-            analysis.level == SeverityLevel.R4
+        // 3) 分级路由：人工等级只能上调，取更严重的一档（见改动说明 §2.3）
+        val effective = SeverityLevel.moreSevere(analysis.level, manualLevel)
+        val autoAllowed = effective.rank >= SeverityLevel.R2.rank
 
         if (!autoAllowed) {
             DemoRepo.saveReport(
-                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, now, ReportStatus.DRAFT)
+                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, manualLevel, now, ReportStatus.DRAFT)
             )
             return SubmitOutcome.DraftOnly(R.string.outcome_draft)
         }
         if (!autoReport) {
             DemoRepo.saveReport(
-                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, now, ReportStatus.DRAFT)
+                draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, manualLevel, now, ReportStatus.DRAFT)
             )
             return SubmitOutcome.DraftOnly(R.string.outcome_draft)
         }
@@ -88,7 +89,7 @@ object ReportFlow {
             return SubmitOutcome.Failed(R.string.err_duplicate, listOf(dup.waterbodyName))
         }
 
-        val report = draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, now, ReportStatus.REPORTED)
+        val report = draftOf(user.id, analysis, photoPath, waterbody, lat, lng, note, manualLevel, now, ReportStatus.REPORTED)
             .copy(precision = locationPrecision)
 
         // 5) 建单（服务端）
@@ -110,6 +111,7 @@ object ReportFlow {
         lat: Double,
         lng: Double,
         note: String,
+        manualLevel: SeverityLevel?,
         now: Long,
         status: ReportStatus
     ) = Report(
@@ -130,7 +132,12 @@ object ReportFlow {
         photoPath = photoPath,
         status = status,
         ticketId = null,
-        engine = a.engine
+        engine = a.engine,
+        aiIndex = a.index,
+        aiLevel = a.level,
+        manualLevel = manualLevel,
+        levelSource = LevelSource.of(a.level, manualLevel),
+        userAdjusted = manualLevel != null && manualLevel != a.level
     )
 
     /** 详情页"手动上报"：把一条草稿升级为工单 */
@@ -140,7 +147,8 @@ object ReportFlow {
             ?: return SubmitOutcome.Failed(R.string.err_record_missing)
         if (r.status != ReportStatus.DRAFT) return SubmitOutcome.Failed(R.string.err_already_reported)
         if (r.confidence == Confidence.LOW) return SubmitOutcome.Blocked(R.string.blocked_low_conf)
-        if (r.level == SeverityLevel.R0 || r.level == SeverityLevel.R1) {
+        // 人工等级只能上调：这里用 effectiveLevel 而不是 r.level
+        if (r.effectiveLevel.rank < SeverityLevel.R2.rank) {
             val updated = r.copy(status = ReportStatus.REPORTED, createdAt = now)
             DemoRepo.updateReport(updated)
             return SubmitOutcome.Reported(updated, null, autoReported = false, escalated = false)

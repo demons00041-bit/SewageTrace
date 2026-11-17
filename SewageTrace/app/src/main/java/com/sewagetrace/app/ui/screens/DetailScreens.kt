@@ -52,6 +52,7 @@ import com.sewagetrace.app.ui.components.Divider2
 import com.sewagetrace.app.ui.components.KV
 import com.sewagetrace.app.ui.components.ProgressBar
 import com.sewagetrace.app.ui.components.SectionTitle
+import com.sewagetrace.app.ui.components.levelName
 import com.sewagetrace.app.ui.theme.Water300
 import com.sewagetrace.app.ui.theme.Water700
 
@@ -144,7 +145,36 @@ fun ReportResultScreen(vm: AppViewModel, reportId: String) {
                         stringResource(R.string.confidence_label),
                         stringResource(r.confidence.labelRes) + " · " + stringResource(r.confidence.descRes)
                     )
-                    if (r.note.isNotBlank()) KV(stringResource(R.string.extra_note), r.note)
+                    // 需求 CAP-02f：人工等级与 AI 等级并列展示，便于复核
+                    KV(
+                        stringResource(R.string.manual_level_row),
+                        r.manualLevel?.let { it.code + " " + levelName(it) }
+                            ?: stringResource(R.string.level_ungraded)
+                    )
+                    KV(
+                        stringResource(R.string.ai_level_row),
+                        r.aiLevel.code + " " + levelName(r.aiLevel)
+                    )
+                    if (r.note.isNotBlank()) KV(stringResource(R.string.scene_desc_label), r.note)
+                }
+            }
+
+            // 人工与 AI 不一致时高亮，提示复核
+            if (r.levelMismatch) {
+                Spacer(Modifier.height(10.dp))
+                CardBox(container = Color(0xFFF59E0B).copy(alpha = 0.10f)) {
+                    Column(Modifier.padding(13.dp)) {
+                        Text(
+                            stringResource(R.string.level_mismatch_title),
+                            fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFB45309)
+                        )
+                        Spacer(Modifier.height(3.dp))
+                        Text(
+                            stringResource(R.string.level_mismatch_note),
+                            fontSize = 10.5.sp, lineHeight = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 

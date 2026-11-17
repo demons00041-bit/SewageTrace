@@ -4,15 +4,51 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.sewagetrace.app.R
 
-enum class SeverityLevel(val code: String, val minScore: Int, val color: Color) {
-    R4("R4", 70, Color(0xFFDC2626)),
-    R3("R3", 50, Color(0xFFF97316)),
-    R2("R2", 30, Color(0xFFEAB308)),
-    R1("R1", 15, Color(0xFF84CC16)),
-    R0("R0", 0, Color(0xFF22C55E));
+enum class SeverityLevel(
+    val code: String,
+    val minScore: Int,
+    val color: Color,
+    /** 严重程度序号：R0=0（最轻）→ R4=4（最重）。不要用 ordinal，枚举声明是倒序的。 */
+    val rank: Int
+) {
+    R4("R4", 70, Color(0xFFDC2626), 4),
+    R3("R3", 50, Color(0xFFF97316), 3),
+    R2("R2", 30, Color(0xFFEAB308), 2),
+    R1("R1", 15, Color(0xFF84CC16), 1),
+    R0("R0", 0, Color(0xFF22C55E), 0);
 
     companion object {
         fun of(score: Int): SeverityLevel = entries.first { score >= it.minScore }
+
+        /**
+         * 取两者中更严重的一档。
+         * 业务规则：人工等级只能「上调」不能「下调」AI 判定，防止人工低估导致漏报。
+         */
+        fun moreSevere(a: SeverityLevel, b: SeverityLevel?): SeverityLevel =
+            if (b == null || a.rank >= b.rank) a else b
+
+        /** 由低到高的展示顺序：R0 → R4（人工等级选择器用这个） */
+        fun ascending(): List<SeverityLevel> = entries.sortedBy { it.rank }
+    }
+}
+
+/** 等级来源，对应需求 CAP-03 的 `level_source` */
+enum class LevelSource(val id: String) {
+    /** 只有 AI 判定，未人工分级（含历史数据） */
+    AI("ai"),
+
+    /** 人工分级，且与 AI 判定不同 */
+    MANUAL("manual"),
+
+    /** 人工分级，且与 AI 判定一致 */
+    BOTH("both");
+
+    companion object {
+        fun of(ai: SeverityLevel, manual: SeverityLevel?): LevelSource = when {
+            manual == null -> AI
+            manual == ai -> BOTH
+            else -> MANUAL
+        }
     }
 }
 
@@ -156,10 +192,23 @@ data class Report(
     val userAdjusted: Boolean = false,
     val aiIndex: Int = index,
     val aiLevel: SeverityLevel = level,
+    /** 人工确认的等级；null = 未分级（历史数据，或没有照片的纯点位记录） */
+    val manualLevel: SeverityLevel? = null,
+    /** 等级来源：ai / manual / both */
+    val levelSource: LevelSource = LevelSource.AI,
     val dedupCounted: Boolean = true,
     val engine: String = ENGINE_LOCAL
 ) {
     val severity: Severity get() = Severity.of(level)
+
+    /** 展示用等级：人工优先，没人工才回落到 AI */
+    val displayLevel: SeverityLevel get() = manualLevel ?: level
+
+    /** 业务路由用等级：人工只能上调，取更严重的一档 */
+    val effectiveLevel: SeverityLevel get() = SeverityLevel.moreSevere(level, manualLevel)
+
+    /** 人工与 AI 不一致（详情页要高亮提示复核） */
+    val levelMismatch: Boolean get() = manualLevel != null && manualLevel != level
 
     companion object {
         const val ENGINE_LOCAL = "local"

@@ -29,6 +29,7 @@ import com.sewagetrace.app.model.AgencyType
 import com.sewagetrace.app.model.Booking
 import com.sewagetrace.app.model.LeaderRow
 import com.sewagetrace.app.model.Report
+import com.sewagetrace.app.model.SeverityLevel
 import com.sewagetrace.app.model.Ticket
 import com.sewagetrace.app.model.TicketLog
 import com.sewagetrace.app.model.TicketStage
@@ -147,6 +148,20 @@ class AppViewModel : ViewModel() {
     var waterbody by mutableStateOf("")
     var note by mutableStateOf("")
 
+    /** 人工确认的污水等级；null = 尚未选择，此时不允许提交（需求 CAP-02） */
+    var manualLevel by mutableStateOf<SeverityLevel?>(null)
+
+    fun updateManualLevel(level: SeverityLevel?) {
+        manualLevel = level
+        tick++
+    }
+
+    /** 场景描述（= Report.note），上限 500 字符 */
+    fun updateNote(v: String) {
+        note = v.take(500)
+        tick++
+    }
+
     /** 自动上报开关，持久化到 Settings */
     var autoReport by mutableStateOf(Settings.autoReport)
         private set
@@ -184,7 +199,8 @@ class AppViewModel : ViewModel() {
         scene = s
         photoPath = DemoPhotoFactory.ensure(AppContextHolder.ctx, s)
         waterbody = s.waterbody
-        note = ""
+        // 场景描述跨图片保留（需求 CAP-01d），只重置人工等级
+        manualLevel = null
         phase = DetectPhase.SHOOTING
         tick++
         runAnalysis()
@@ -202,7 +218,8 @@ class AppViewModel : ViewModel() {
         scene = s
         photoPath = path
         waterbody = s.waterbody
-        note = ""
+        // 场景描述跨图片保留（需求 CAP-01d），只重置人工等级
+        manualLevel = null
         phase = DetectPhase.SHOOTING
         tick++
         runAnalysis()
@@ -223,7 +240,7 @@ class AppViewModel : ViewModel() {
         scene = null
         photoPath = path
         waterbody = ""
-        note = ""
+        manualLevel = null
         phase = DetectPhase.SHOOTING
         tick++
         runAnalysis()
@@ -261,6 +278,7 @@ class AppViewModel : ViewModel() {
     fun submit() {
         val a = analysis ?: return
         val p = photoPath ?: return
+        manualLevel ?: return   // 未选等级不提交（按钮侧已禁用）
         val s = scene
         // 真实照片没有场景默认水体名，留空则用"未命名水体"
         val name = waterbody.ifBlank {
@@ -275,6 +293,7 @@ class AppViewModel : ViewModel() {
             lng = DEMO_LNG,
             note = note,
             autoReport = autoReport,
+            manualLevel = manualLevel,
             locationPrecision = locationPrecision
         )
         outcome = res
@@ -290,8 +309,9 @@ class AppViewModel : ViewModel() {
         analysis = null
         outcome = null
         fallback = null
-        note = ""
         waterbody = ""
+        note = ""          // 重拍 = 新一轮采集，描述与等级一并清空
+        manualLevel = null
         analyzing = false
         analyzingProgress = 0
         tick++
