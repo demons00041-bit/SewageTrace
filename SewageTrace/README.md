@@ -238,7 +238,7 @@ res/values-zh/strings.xml   中文
 
 | 项目 | Demo 现状 | 正式版应该 |
 |---|---|---|
-| 地图 | Canvas 手绘示意底图 | 真实 OSM / Google 瓦片 |
+| 地图 | MapLibre + OpenFreeMap 真实矢量地图（2D/3D 切换、底部面板），离线时只剩列表 | 离线瓦片包；机构点位换成真实名录 |
 | 机构数据 | `assets/agencies.json` 虚构名称 | 政府公布的机构名录 |
 | 后端 | 无，全部本地 | 需要真实 API + 鉴权 |
 | 上报 | 只写本地工单 | 对接政务系统 / 12345 |

@@ -129,7 +129,7 @@
     <string name="filter_plant">污水厂</string>
     <string name="filter_monitor">监测站</string>
     <string name="map_offline">底图不可用，当前显示示意地图。</string>
-    <string name="map_attribution">© OpenStreetMap 贡献者</string>
+    <string name="map_attribution">© OpenFreeMap © OpenMapTiles © OpenStreetMap 贡献者</string>
     <string name="map_legend">图例</string>
     <string name="nearby">附近</string>
     <string name="distance_m">%1$d 米</string>
@@ -682,4 +682,12 @@
     <string name="level_ungraded">未分级</string>
     <string name="level_mismatch_title">人工等级与 AI 判定不一致</string>
     <string name="level_mismatch_note">两个等级都会保留以便追溯。上报路由取两者中更严重的一档，因此人工上调不会被忽略。</string>
+    <!-- 地图：MapLibre 版 -->
+    <string name="map_switch_2d">切换到 2D</string>
+    <string name="map_switch_3d">切换到 3D</string>
+    <string name="map_full_view">全览</string>
+    <string name="map_my_location">我的位置</string>
+    <string name="map_tiles_failed">底图加载失败（可能处于离线状态），下方列表仍可正常使用。</string>
+    <string name="map_retry">重试</string>
+    <string name="map_view_details">查看详情</string>
 </resources>

@@ -56,8 +56,9 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
-    // 地图：osmdroid + OpenStreetMap（开源、免 Key、免费用）
-    implementation("org.osmdroid:osmdroid-android:6.1.20")
+    // 地图：MapLibre Native + OpenFreeMap 矢量瓦片（开源、免 Key、免费用，支持 3D 倾斜）
+    // 用 OpenGL ES 版而不是默认的 Vulkan 版：模拟器和老机型兼容性更好
+    implementation("org.maplibre.gl:android-sdk-opengl:13.7.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }

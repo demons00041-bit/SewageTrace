@@ -130,7 +130,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="filter_plant">Treatment works</string>
     <string name="filter_monitor">Monitoring</string>
     <string name="map_offline">Basemap unavailable — showing schematic map.</string>
-    <string name="map_attribution">© OpenStreetMap contributors</string>
+    <string name="map_attribution">© OpenFreeMap © OpenMapTiles © OpenStreetMap contributors</string>
     <string name="map_legend">Legend</string>
     <string name="nearby">Nearby</string>
     <string name="distance_m">%1$d m</string>
@@ -678,4 +678,12 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="level_ungraded">Not graded</string>
     <string name="level_mismatch_title">Manual level differs from the AI result</string>
     <string name="level_mismatch_note">Both levels are kept for traceability. Routing follows the more severe of the two, so a manual upgrade can never be lost.</string>
+    <!-- 地图：MapLibre 版 -->
+    <string name="map_switch_2d">Switch to 2D</string>
+    <string name="map_switch_3d">Switch to 3D</string>
+    <string name="map_full_view">Show everything</string>
+    <string name="map_my_location">My location</string>
+    <string name="map_tiles_failed">Basemap couldn\'t load (are you offline?). The list below still works.</string>
+    <string name="map_retry">Retry</string>
+    <string name="map_view_details">View details</string>
 </resources>
