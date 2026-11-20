@@ -106,9 +106,19 @@ fun ReportResultScreen(vm: AppViewModel, reportId: String) {
 
             ResultCard(
                 r.index, r.level, r.confidence, stringResource(r.suspectedType.labelRes),
-                if (r.engine == com.sewagetrace.app.model.Report.ENGINE_CLOUD)
-                    vm.cloudEngineName else vm.localEngineName
+                when (r.engine) {
+                    com.sewagetrace.app.model.Report.ENGINE_CLOUD -> vm.cloudEngineName
+                    com.sewagetrace.app.model.Report.ENGINE_MANUAL -> stringResource(R.string.engine_manual)
+                    else -> vm.localEngineName
+                }
             )
+            Spacer(Modifier.height(10.dp))
+            // MAP-02c：跳到地图并聚焦这条记录
+            androidx.compose.material3.OutlinedButton(
+                onClick = { vm.showOnMap(r.id) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) { Text(stringResource(R.string.map_show_on_map), fontSize = 13.sp) }
             Spacer(Modifier.height(12.dp))
 
             CardBox {

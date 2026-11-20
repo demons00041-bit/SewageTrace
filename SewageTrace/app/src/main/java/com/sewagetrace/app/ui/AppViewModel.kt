@@ -462,6 +462,24 @@ class AppViewModel : ViewModel() {
     var selectedAgencyId by mutableStateOf<String?>("lab-001")
     var showReportsOnMap by mutableStateOf(true)
 
+    /** 地图按污染等级筛选（MAP-03b）；null = 全部等级。只作用于上报点位，不影响机构 */
+    var levelFilter by mutableStateOf<SeverityLevel?>(null)
+
+    /** 从记录详情跳到地图时要聚焦的记录（MAP-02c），地图消费后清空 */
+    var mapFocusReportId by mutableStateOf<String?>(null)
+
+    fun showOnMap(reportId: String) {
+        mapFocusReportId = reportId
+        home(Tab.MAP)
+    }
+
+    /** 重置演示数据（个人页 → 设置）。录视频前用，见 DemoRepo.resetDemo */
+    fun resetDemoData() {
+        DemoRepo.resetDemo()
+        if (DemoRepo.currentUser() == null) screen = Screen.Auth
+        tick++
+    }
+
     fun agencies(): List<Pair<Agency, Int>> = StatsService.agencies(agencyFilter, DEMO_LAT, DEMO_LNG)
 
     fun agency(id: String): Agency? = DemoRepo.agencies.firstOrNull { it.id == id }

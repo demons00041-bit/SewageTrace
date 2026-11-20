@@ -287,6 +287,8 @@ object TicketService {
         val radius = if (Campus.contains(report.lat, report.lng)) 300.0 else 1000.0
         val similar = DemoRepo.reports.filter {
             it.id != report.id &&
+                // 只数真正上报过的：草稿 / 手动标记 / 被驳回的不算「印证」
+                it.status != ReportStatus.DRAFT && it.status != ReportStatus.REJECTED &&
                 distMeters(it.lat, it.lng, report.lat, report.lng) <= radius &&
                 now - it.createdAt <= 72 * HOUR &&
                 it.userId != report.userId

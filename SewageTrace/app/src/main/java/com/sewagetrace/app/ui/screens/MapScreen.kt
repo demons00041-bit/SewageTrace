@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -63,6 +64,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sewagetrace.app.R
 import com.sewagetrace.app.data.Campus
 import com.sewagetrace.app.data.DemoRepo
+import com.sewagetrace.app.data.MarkerService
 import com.sewagetrace.app.data.StatsService
 import com.sewagetrace.app.data.TicketService
 import com.sewagetrace.app.map.MapConfig
@@ -70,9 +72,12 @@ import com.sewagetrace.app.model.Agency
 import com.sewagetrace.app.model.AgencyType
 import com.sewagetrace.app.model.Report
 import com.sewagetrace.app.model.ReportStatus
+import com.sewagetrace.app.model.SeverityLevel
 import com.sewagetrace.app.ui.AppViewModel
 import com.sewagetrace.app.ui.Screen
 import com.sewagetrace.app.ui.components.CardBox
+import com.sewagetrace.app.ui.components.ManualLevelPicker
+import com.sewagetrace.app.ui.components.SceneDescriptionField
 import com.sewagetrace.app.ui.components.levelName
 import com.sewagetrace.app.ui.theme.Water700
 import org.maplibre.android.camera.CameraPosition
@@ -116,7 +121,12 @@ fun MapScreen(vm: AppViewModel) {
 
     val me = LatLng(AppViewModel.DEMO_LAT, AppViewModel.DEMO_LNG)
     val agencies = StatsService.agencies(vm.agencyFilter, me.latitude, me.longitude)
-    val reports = if (vm.showReportsOnMap) DemoRepo.reports.filter { it.status != ReportStatus.DRAFT } else emptyList()
+    val myId = vm.user?.id
+    // 别人的草稿不公开；自己的草稿/手动标记要显示（可编辑）。等级筛选只作用于上报点位
+    val reports = if (vm.showReportsOnMap) DemoRepo.reports.filter {
+        (it.status != ReportStatus.DRAFT || it.userId == myId) &&
+            (vm.levelFilter == null || it.effectiveLevel == vm.levelFilter)
+    } else emptyList()
 
     var map by remember { mutableStateOf<MapLibreMap?>(null) }
     var styleReady by remember { mutableStateOf(false) }
@@ -124,20 +134,25 @@ fun MapScreen(vm: AppViewModel) {
     var is3d by remember { mutableStateOf(true) }
     var selected by remember { mutableStateOf<MapPin?>(null) }
     var didInitialFit by remember { mutableStateOf(false) }
+    /** 标记编辑表单：null = 关闭 */
+    var editor by remember { mutableStateOf<MarkerDraft?>(null) }
+    /** 正在移动位置的记录 id（准星模式） */
+    var moving by remember { mutableStateOf<String?>(null) }
+    var confirmDelete by remember { mutableStateOf<String?>(null) }
 
     val peek = 230.dp
     val peekPx = with(density) { peek.toPx() }.toDouble()
     val sheetState = rememberBottomSheetScaffoldState()
 
     // ---- 相机操作（都把底部面板高度算进 padding，避免点位被面板挡住）----
-    fun flyTo(target: LatLng, zoom: Double) {
+    fun flyTo(target: LatLng, zoom: Double, bottomPad: Double = peekPx) {
         val m = map ?: return
         val pos = CameraPosition.Builder()
             .target(target)
             .zoom(zoom)
             .tilt(if (is3d) MapConfig.TILT_3D else 0.0)
             .bearing(if (is3d) MapConfig.BEARING_3D else 0.0)
-            .padding(0.0, 0.0, 0.0, peekPx)
+            .padding(0.0, 0.0, 0.0, bottomPad)
             .build()
         m.animateCamera(CameraUpdateFactory.newCameraPosition(pos), MapConfig.ANIM_MS)
     }
@@ -174,13 +189,26 @@ fun MapScreen(vm: AppViewModel) {
         }
     }
 
-    val onPinClick by rememberUpdatedState<(MapPin?) -> Unit> { select(it) }
+    val onPinClick by rememberUpdatedState<(MapPin?) -> Unit> { if (moving == null) select(it) }
+    // 长按新增标记（需要登录；移动模式下不响应）
+    val onLongPress by rememberUpdatedState<(LatLng) -> Unit> { p ->
+        if (moving == null && myId != null) {
+            editor = MarkerDraft(reportId = null, lat = p.latitude, lng = p.longitude, name = "", level = null, note = "", aiLevel = null)
+        }
+    }
+
+    fun startMove(reportId: String) {
+        val r = DemoRepo.reports.firstOrNull { it.id == reportId } ?: return
+        moving = reportId
+        // 准星在地图正中，所以这里不留底部面板的 padding，相机中心 = 屏幕中心
+        flyTo(LatLng(r.lat, r.lng), MapConfig.FOCUS_ZOOM, bottomPad = 0.0)
+    }
 
     // ---- 数据 -> GeoJSON：每次数据变化只 setGeoJson，不重建图层 ----
     LaunchedEffect(styleReady, agencies, reports, vm.locationPrecision, selected) {
         val style = map?.style ?: return@LaunchedEffect
         if (!styleReady) return@LaunchedEffect
-        style.getSourceAs<GeoJsonSource>(SRC_PINS)?.setGeoJson(pinsToGeoJson(agencies.map { it.first }, reports))
+        style.getSourceAs<GeoJsonSource>(SRC_PINS)?.setGeoJson(pinsToGeoJson(agencies.map { it.first }, reports, myId))
         style.getSourceAs<GeoJsonSource>(SRC_ME)?.setGeoJson(
             FeatureCollection.fromFeatures(listOf(Feature.fromGeometry(Point.fromLngLat(me.longitude, me.latitude))))
         )
@@ -196,7 +224,21 @@ fun MapScreen(vm: AppViewModel) {
                 listOfNotNull(sel?.let { Feature.fromGeometry(Point.fromLngLat(it.longitude, it.latitude)) })
             )
         )
-        if (!didInitialFit) { didInitialFit = true; fitAll(campusOnly = true) }
+        if (!didInitialFit) {
+            didInitialFit = true
+            // 从记录详情跳过来时由下面的聚焦逻辑接管，不做首次框选
+            if (vm.mapFocusReportId == null) fitAll(campusOnly = true)
+        }
+    }
+
+    // MAP-02c：从记录详情跳转并聚焦（16 级）。临时放开筛选，保证这条记录一定可见
+    LaunchedEffect(styleReady, vm.mapFocusReportId) {
+        val id = vm.mapFocusReportId ?: return@LaunchedEffect
+        if (!styleReady) return@LaunchedEffect
+        vm.showReportsOnMap = true
+        vm.levelFilter = null
+        select(MapPin.ReportPin(id))
+        vm.mapFocusReportId = null
     }
 
     // 切 2D/3D 时只改倾斜和朝向，保留当前中心与缩放
@@ -224,7 +266,17 @@ fun MapScreen(vm: AppViewModel) {
                 reports = reports,
                 selected = selected,
                 onClearSelection = { selected = null },
-                onAgencyRow = { select(MapPin.AgencyPin(it.id)) }
+                onAgencyRow = { select(MapPin.AgencyPin(it.id)) },
+                myId = myId,
+                onEdit = { r ->
+                    editor = MarkerDraft(
+                        reportId = r.id, lat = r.lat, lng = r.lng, name = r.waterbodyName,
+                        level = r.manualLevel ?: r.level, note = r.note,
+                        aiLevel = if (r.engine == Report.ENGINE_MANUAL) null else r.level
+                    )
+                },
+                onMove = { startMove(it.id) },
+                onDelete = { confirmDelete = it.id }
             )
         }
     ) {
@@ -247,6 +299,7 @@ fun MapScreen(vm: AppViewModel) {
                                 .bearing(MapConfig.BEARING_3D)
                                 .build()
                             loadStyle(m) { styleReady = true; loadFailed = false }
+                            m.addOnMapLongClickListener { latLng -> onLongPress(latLng); true }
                             m.addOnMapClickListener { latLng ->
                                 val p = m.projection.toScreenLocation(latLng)
                                 val r = with(density) { 14.dp.toPx() }
@@ -267,13 +320,14 @@ fun MapScreen(vm: AppViewModel) {
                 modifier = Modifier.fillMaxSize()
             )
 
-            // 顶部：分类筛选（悬浮胶囊，横向可滑）
+            if (moving == null) {
+            // 顶部：分类筛选（悬浮胶囊，横向可滑）+ 等级筛选
+            Column(Modifier.align(Alignment.TopStart).fillMaxWidth()) {
             Row(
                 Modifier
-                    .align(Alignment.TopStart)
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                    .padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 6.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 MapChip(stringResource(R.string.filter_all), null, vm.agencyFilter == null) { vm.agencyFilter = null }
@@ -287,6 +341,24 @@ fun MapScreen(vm: AppViewModel) {
                     REPORT_COLOR, vm.showReportsOnMap
                 ) { vm.showReportsOnMap = !vm.showReportsOnMap }
             }
+            // MAP-03b：按污染等级筛选上报点位
+            if (vm.showReportsOnMap) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    MapChip(stringResource(R.string.filter_level_all), null, vm.levelFilter == null) { vm.levelFilter = null }
+                    SeverityLevel.entries.forEach { lvl ->   // R4 → R0，重的在前
+                        MapChip(lvl.code + " · " + levelName(lvl), lvl.color, vm.levelFilter == lvl) {
+                            vm.levelFilter = if (vm.levelFilter == lvl) null else lvl
+                        }
+                    }
+                }
+            }
+            }
 
             // 右侧：3D / 全览 / 定位 / 缩放
             Column(
@@ -299,6 +371,36 @@ fun MapScreen(vm: AppViewModel) {
                 Spacer(Modifier.size(4.dp))
                 MapIconBtn(Icons.Filled.Add, null) { map?.animateCamera(CameraUpdateFactory.zoomIn()) }
                 MapIconBtn(Icons.Filled.Remove, null) { map?.animateCamera(CameraUpdateFactory.zoomOut()) }
+            }
+            } // moving == null
+
+            // 移动模式：地图中心准星 + 顶部说明与确认
+            moving?.let { movingId ->
+                Crosshair(Modifier.align(Alignment.Center))
+                CardBox(Modifier.align(Alignment.TopCenter).padding(12.dp)) {
+                    Column(Modifier.padding(14.dp)) {
+                        Text(stringResource(R.string.marker_move_hint), fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        Spacer(Modifier.size(10.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Box(Modifier.weight(1f)) {
+                                SecondaryPill(stringResource(R.string.cancel)) {
+                                    moving = null
+                                    selected = MapPin.ReportPin(movingId)
+                                }
+                            }
+                            Box(Modifier.weight(1f)) {
+                                PrimaryPill(stringResource(R.string.marker_move_confirm)) {
+                                    map?.cameraPosition?.target?.let { t ->
+                                        MarkerService.move(movingId, myId, t.latitude, t.longitude)
+                                        vm.refresh()
+                                    }
+                                    moving = null
+                                    select(MapPin.ReportPin(movingId))
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             // 左下（面板上方）：署名，点开 OSM 版权页
@@ -342,6 +444,45 @@ fun MapScreen(vm: AppViewModel) {
             }
         }
     }
+
+    // ---- 新增 / 编辑标记 ----
+    editor?.let { d ->
+        MarkerEditorSheet(
+            draft = d,
+            onDismiss = { editor = null },
+            onSave = { name, level, note ->
+                val uid = myId ?: return@MarkerEditorSheet
+                val saved = if (d.reportId == null) {
+                    MarkerService.create(uid, name, level, note, d.lat, d.lng, vm.locationPrecision)
+                } else {
+                    MarkerService.update(d.reportId, uid, name, level, note)
+                }
+                editor = null
+                vm.refresh()
+                saved?.let { select(MapPin.ReportPin(it.id)) }
+            }
+        )
+    }
+
+    // ---- 删除确认 ----
+    confirmDelete?.let { id ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirmDelete = null },
+            title = { Text(stringResource(R.string.marker_delete_title)) },
+            text = { Text(stringResource(R.string.marker_delete_body)) },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    MarkerService.delete(id, myId)
+                    confirmDelete = null
+                    selected = null
+                    vm.refresh()
+                }) { Text(stringResource(R.string.marker_delete), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { confirmDelete = null }) { Text(stringResource(R.string.cancel)) }
+            }
+        )
+    }
 }
 
 // ============================================================================
@@ -355,7 +496,11 @@ private fun MapSheet(
     reports: List<Report>,
     selected: MapPin?,
     onClearSelection: () -> Unit,
-    onAgencyRow: (Agency) -> Unit
+    onAgencyRow: (Agency) -> Unit,
+    myId: String?,
+    onEdit: (Report) -> Unit,
+    onMove: (Report) -> Unit,
+    onDelete: (Report) -> Unit
 ) {
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         when (selected) {
@@ -370,7 +515,11 @@ private fun MapSheet(
         }
         if (selected is MapPin.ReportPin) {
             DemoRepo.reports.firstOrNull { it.id == selected.id }?.let { r ->
-                SelectedReportCard(r, onClose = onClearSelection) {
+                SelectedReportCard(
+                    r, myId,
+                    onClose = onClearSelection,
+                    onEdit = { onEdit(r) }, onMove = { onMove(r) }, onDelete = { onDelete(r) }
+                ) {
                     vm.go(r.ticketId?.let { Screen.TicketDetail(it) } ?: Screen.ReportResult(r.id))
                 }
                 Spacer(Modifier.size(12.dp))
@@ -380,6 +529,13 @@ private fun MapSheet(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 8.dp)) {
             Text(stringResource(R.string.map_nearby), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
             Text(stringResource(R.string.map_sorted, agencies.size), fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (myId != null && selected == null) {
+            Text(
+                "＋ " + stringResource(R.string.map_long_press_hint),
+                fontSize = 11.sp, color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
         LazyColumn(
             Modifier.fillMaxWidth().heightIn(max = 520.dp),
@@ -425,7 +581,15 @@ private fun SelectedAgencyCard(a: Agency, dist: Int, onClose: () -> Unit, onOpen
 }
 
 @Composable
-private fun SelectedReportCard(r: Report, onClose: () -> Unit, onOpen: () -> Unit) {
+private fun SelectedReportCard(
+    r: Report,
+    myId: String?,
+    onClose: () -> Unit,
+    onEdit: () -> Unit,
+    onMove: () -> Unit,
+    onDelete: () -> Unit,
+    onOpen: () -> Unit
+) {
     val level = r.effectiveLevel
     CardBox(container = MaterialTheme.colorScheme.surfaceVariant) {
         Column(Modifier.padding(14.dp)) {
@@ -444,12 +608,37 @@ private fun SelectedReportCard(r: Report, onClose: () -> Unit, onOpen: () -> Uni
                 )
             }
             Spacer(Modifier.size(6.dp))
-            Text(r.waterbodyName, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 2)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(r.waterbodyName, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, modifier = Modifier.weight(1f, fill = false))
+                if (MarkerService.isMine(r, myId)) {
+                    Spacer(Modifier.width(6.dp))
+                    Tag(stringResource(R.string.marker_mine), Water700)
+                }
+                if (r.status == ReportStatus.DRAFT) {
+                    Spacer(Modifier.width(4.dp))
+                    Tag(stringResource(R.string.marker_draft), MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
             if (r.note.isNotBlank()) {
                 Text(r.note, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
             }
             Spacer(Modifier.size(10.dp))
             PrimaryPill(stringResource(R.string.map_view_details), onOpen)
+            if (MarkerService.canEdit(r, myId)) {
+                Spacer(Modifier.size(8.dp))
+                val movable = MarkerService.canMoveOrDelete(r, myId)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Box(Modifier.weight(1f)) { SecondaryPill(stringResource(R.string.marker_edit), onClick = onEdit) }
+                    Box(Modifier.weight(1f)) { SecondaryPill(stringResource(R.string.marker_move), enabled = movable, onClick = onMove) }
+                    Box(Modifier.weight(1f)) {
+                        SecondaryPill(stringResource(R.string.marker_delete), enabled = movable, danger = true, onClick = onDelete)
+                    }
+                }
+                if (!movable) {
+                    Spacer(Modifier.size(6.dp))
+                    Text(stringResource(R.string.marker_locked), fontSize = 10.5.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
         }
     }
 }
@@ -465,6 +654,122 @@ private fun PrimaryPill(label: String, onClick: () -> Unit) {
             .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center
     ) { Text(label, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold) }
+}
+
+@Composable
+private fun SecondaryPill(label: String, enabled: Boolean = true, danger: Boolean = false, onClick: () -> Unit) {
+    val fg = when {
+        !enabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+        danger -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, fg.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(vertical = 9.dp),
+        contentAlignment = Alignment.Center
+    ) { Text(label, color = fg, fontSize = 12.5.sp, fontWeight = FontWeight.Medium) }
+}
+
+@Composable
+private fun Tag(text: String, color: Color) {
+    Box(
+        Modifier.clip(RoundedCornerShape(6.dp)).background(color.copy(alpha = 0.16f))
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    ) { Text(text, fontSize = 9.5.sp, color = color, fontWeight = FontWeight.Medium) }
+}
+
+/** 移动模式的准星：竖线 + 圆点，尖端指向地图正中 */
+@Composable
+private fun Crosshair(modifier: Modifier) {
+    Box(modifier.size(44.dp), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(44.dp).clip(CircleShape).border(2.dp, Water700, CircleShape).background(Water700.copy(alpha = 0.10f)))
+        Box(Modifier.size(width = 2.dp, height = 44.dp).background(Water700.copy(alpha = 0.6f)))
+        Box(Modifier.size(width = 44.dp, height = 2.dp).background(Water700.copy(alpha = 0.6f)))
+        Box(Modifier.size(10.dp).clip(CircleShape).background(Water700).border(2.dp, Color.White, CircleShape))
+    }
+}
+
+// ============================================================================
+// 标记编辑表单（新增 / 编辑共用）
+// ============================================================================
+
+/** 表单初值。reportId = null 表示新增 */
+private data class MarkerDraft(
+    val reportId: String?,
+    val lat: Double,
+    val lng: Double,
+    val name: String,
+    val level: SeverityLevel?,
+    val note: String,
+    /** 拍照记录的 AI 判定，用于在选择器上显示「AI 建议」；手动标记为 null */
+    val aiLevel: SeverityLevel?
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MarkerEditorSheet(
+    draft: MarkerDraft,
+    onDismiss: () -> Unit,
+    onSave: (name: String, level: SeverityLevel, note: String) -> Unit
+) {
+    var name by remember(draft) { mutableStateOf(draft.name) }
+    var level by remember(draft) { mutableStateOf(draft.level) }
+    var note by remember(draft) { mutableStateOf(draft.note) }
+    val sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 24.dp)
+        ) {
+            Text(
+                stringResource(if (draft.reportId == null) R.string.marker_new_title else R.string.marker_edit_title),
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                "%.5f, %.5f".format(draft.lat, draft.lng) + " · " +
+                    stringResource(if (Campus.contains(draft.lat, draft.lng)) R.string.ticket_scope_campus else R.string.ticket_scope_external),
+                fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.size(14.dp))
+            androidx.compose.material3.OutlinedTextField(
+                value = name,
+                onValueChange = { name = it.take(48) },
+                label = { Text(stringResource(R.string.waterbody), fontSize = 12.sp) },
+                placeholder = { Text(stringResource(R.string.waterbody_hint), fontSize = 12.sp) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.size(14.dp))
+            ManualLevelPicker(selected = level, onSelect = { level = it }, aiSuggestion = draft.aiLevel)
+            Spacer(Modifier.size(14.dp))
+            SceneDescriptionField(value = note, onValueChange = { note = it })
+            Spacer(Modifier.size(18.dp))
+            val canSave = name.isNotBlank() && level != null
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(if (canSave) Water700 else MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable(enabled = canSave) { level?.let { onSave(name, it, note) } }
+                    .padding(vertical = 12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    stringResource(if (level == null) R.string.marker_level_required else R.string.save),
+                    color = if (canSave) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 14.sp, fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
 }
 
 // ============================================================================
@@ -653,8 +958,19 @@ private fun addOverlayLayers(style: Style) {
                     Expression.stop(8, 4f), Expression.stop(13, 7f), Expression.stop(17, 11f)
                 )
             ),
-            PropertyFactory.circleStrokeColor("#FFFFFF"),
-            PropertyFactory.circleStrokeWidth(2.5f)
+            // 我的点位：深青描边更粗；草稿：半透明，一眼分出「还没上报」
+            PropertyFactory.circleStrokeColor(
+                Expression.switchCase(
+                    Expression.get(PROP_MINE), Expression.color(android.graphics.Color.parseColor("#0E7490")),
+                    Expression.color(android.graphics.Color.WHITE)
+                )
+            ),
+            PropertyFactory.circleStrokeWidth(
+                Expression.switchCase(Expression.get(PROP_MINE), Expression.literal(3.5f), Expression.literal(2.5f))
+            ),
+            PropertyFactory.circleOpacity(
+                Expression.switchCase(Expression.get(PROP_DRAFT), Expression.literal(0.55f), Expression.literal(1f))
+            )
         )
     )
 
@@ -685,13 +1001,18 @@ private fun addOverlayLayers(style: Style) {
     )
 }
 
-private fun pinsToGeoJson(agencies: List<Agency>, reports: List<Report>): FeatureCollection {
+private const val PROP_MINE = "mine"
+private const val PROP_DRAFT = "draft"
+
+private fun pinsToGeoJson(agencies: List<Agency>, reports: List<Report>, myId: String?): FeatureCollection {
     val fs = agencies.map { a ->
         Feature.fromGeometry(Point.fromLngLat(a.lng, a.lat)).apply {
             addStringProperty(PROP_ID, a.id)
             addStringProperty(PROP_KIND, KIND_AGENCY)
             addStringProperty(PROP_COLOR, typeColor(a.type).hex())
             addStringProperty(PROP_NAME, a.name)
+            addBooleanProperty(PROP_MINE, false)
+            addBooleanProperty(PROP_DRAFT, false)
         }
     } + reports.map { r ->
         Feature.fromGeometry(Point.fromLngLat(r.lng, r.lat)).apply {
@@ -699,6 +1020,8 @@ private fun pinsToGeoJson(agencies: List<Agency>, reports: List<Report>): Featur
             addStringProperty(PROP_KIND, KIND_REPORT)
             addStringProperty(PROP_COLOR, r.effectiveLevel.color.hex())
             addStringProperty(PROP_NAME, r.waterbodyName)
+            addBooleanProperty(PROP_MINE, r.userId == myId)
+            addBooleanProperty(PROP_DRAFT, r.status == ReportStatus.DRAFT)
         }
     }
     return FeatureCollection.fromFeatures(fs)

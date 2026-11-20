@@ -31,8 +31,8 @@ object MapConfig {
     const val MAX_ZOOM = 19.0
     const val DEFAULT_ZOOM = 12.0
 
-    /** 点选标记 / 从记录详情跳转地图时的聚焦级别 */
-    const val FOCUS_ZOOM = 15.5
+    /** 点选标记 / 从记录详情跳转地图时的聚焦级别（需求 MAP-02c 建议 16） */
+    const val FOCUS_ZOOM = 16.0
 
     /** 3D 模式的倾斜角与朝向（参考 Jalan Pulang 的透视视角） */
     const val TILT_3D = 60.0

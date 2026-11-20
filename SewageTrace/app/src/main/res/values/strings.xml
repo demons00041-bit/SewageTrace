@@ -502,7 +502,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="camera_unavailable">No camera app found on this device. Pick a photo from the gallery instead.</string>
     <string name="capture_failed">The photo was not saved. Please try again.</string>
     <string name="waterbody_unnamed">Unnamed water body</string>
-    <string name="waterbody_hint">e.g. Klang River · Masjid Jamek reach</string>
+    <string name="waterbody_hint">e.g. Tasik Varsiti · north bank</string>
     <string name="cloud_add_key">Cloud AI is not configured yet — add an API key</string>
     <string name="pick_scene">Pick a capture scene</string>
     <string name="pick_scene_sub">Demo only: simulates different water conditions</string>
@@ -695,4 +695,25 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="ticket_referred_to">Referred to</string>
     <string name="ticket_scope_campus">On campus</string>
     <string name="ticket_scope_external">Off campus</string>
+    <!-- 地图标记 CRUD / 持久化 -->
+    <string name="map_long_press_hint">Long-press the map to add a marker</string>
+    <string name="marker_new_title">New marker</string>
+    <string name="marker_edit_title">Edit marker</string>
+    <string name="marker_edit">Edit</string>
+    <string name="marker_move">Move</string>
+    <string name="marker_delete">Delete</string>
+    <string name="marker_locked">Already in a ticket: the location is evidence, so it can\'t be moved or deleted.</string>
+    <string name="marker_move_hint">Pan the map to put the crosshair on the new spot</string>
+    <string name="marker_move_confirm">Confirm location</string>
+    <string name="marker_delete_title">Delete this marker?</string>
+    <string name="marker_delete_body">This can\'t be undone.</string>
+    <string name="marker_draft">Draft</string>
+    <string name="marker_mine">Mine</string>
+    <string name="marker_level_required">Choose a level to save</string>
+    <string name="filter_level_all">All levels</string>
+    <string name="map_show_on_map">Show on map</string>
+    <string name="engine_manual">Manual marker (no photo)</string>
+    <string name="reset_demo">Reset demo data</string>
+    <string name="reset_demo_body">Clears all reports, tickets, bookings and registered accounts, then regenerates the demo set. Do this before recording so the time-based demos (e.g. escalation) work.</string>
+    <string name="reset_demo_confirm">Reset</string>
 </resources>

@@ -2,6 +2,8 @@ package com.sewagetrace.app.data
 
 import android.content.Context
 import com.sewagetrace.app.R
+import com.sewagetrace.app.data.db.PersistentList
+import com.sewagetrace.app.data.db.Store
 import com.sewagetrace.app.model.Agency
 import com.sewagetrace.app.model.AgencyType
 import com.sewagetrace.app.model.Booking
@@ -34,12 +36,15 @@ object DemoRepo {
 
     private val prefs by lazy { AppContextHolder.ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE) }
 
-    val users = mutableListOf<User>()
-    val reports = mutableListOf<Report>()
-    val tickets = mutableListOf<Ticket>()
-    val ticketLogs = mutableListOf<TicketLog>()
+    // 这五个列表任何写操作都会自动落库（见 PersistentList / Store），调用方不用关心持久化
+    val users = PersistentList<User> { Store.markDirty(Store.Table.USERS) }
+    val reports = PersistentList<Report> { Store.markDirty(Store.Table.REPORTS) }
+    val tickets = PersistentList<Ticket> { Store.markDirty(Store.Table.TICKETS) }
+    val ticketLogs = PersistentList<TicketLog> { Store.markDirty(Store.Table.LOGS) }
+    val bookings = PersistentList<Booking> { Store.markDirty(Store.Table.BOOKINGS) }
+
+    /** 机构是静态配置：每次启动从代码种子加载，不落库 */
     val agencies = mutableListOf<Agency>()
-    val bookings = mutableListOf<Booking>()
 
     var currentUserId: String? = null
         private set
@@ -56,8 +61,37 @@ object DemoRepo {
 
     fun load(ctx: Context) {
         AppContextHolder.ctx = ctx.applicationContext
-        if (users.isEmpty()) seed()
+        if (agencies.isNotEmpty()) return   // 已加载过
+        seedAgencies()
+        Store.init(ctx, Store.Sources(users, reports, tickets, ticketLogs, bookings))
+        if (Store.isEmpty()) {
+            // 第一次安装：写入演示数据（写列表即落库）
+            seedActivity()
+        } else {
+            val d = Store.load()
+            users.loadSilently(d.users)
+            reports.loadSilently(d.reports)
+            tickets.loadSilently(d.tickets.sortedByDescending { it.createdAt })
+            ticketLogs.loadSilently(d.logs)
+            bookings.loadSilently(d.bookings)
+        }
         restoreSession()
+    }
+
+    /**
+     * 重置演示数据：清空上报、工单、预约和注册用户，重新生成种子。
+     * 录视频前用：种子里「72 小时内的 Tasik Varsiti 上报」是按重置时刻生成的，
+     * 隔几天不重置，多人印证提级就演示不出来。
+     */
+    fun resetDemo() {
+        users.loadSilently(emptyList())
+        reports.loadSilently(emptyList())
+        tickets.loadSilently(emptyList())
+        ticketLogs.loadSilently(emptyList())
+        bookings.loadSilently(emptyList())
+        seedActivity()
+        Store.markAllDirtyAndFlush()
+        if (currentUser() == null) logout()
     }
 
     fun login(userId: String) {
@@ -115,7 +149,7 @@ object DemoRepo {
 
     // ---------------------------------------------------------------- 种子数据
 
-    private fun seed() {
+    private fun seedActivity() {
         val now = System.currentTimeMillis()
         val day = 86_400_000L
 
@@ -126,6 +160,22 @@ object DemoRepo {
         users += User("u-chen", "Tan M. H. · Engineering", "012****0004", "Kuala Lumpur", true, true, now - 120 * day, isDemoUser = true, studentEmail = "s2000004@siswa.um.edu.my")
         users += User("u-zhao", "Faizal A. · KK5", "012****0005", "Petaling Jaya", true, false, now - 90 * day, isDemoUser = true, studentEmail = "s2000005@siswa.um.edu.my")
 
+        // ======= 他人上报（地图点位 + 工单动态 + 提级演示）=======
+        // 两条 Tasik Varsiti 上报在 72 h 内：演示用户再报一次同一水体 → 3 人印证 → 提级并移交外部机构
+        val seeds = listOf(
+            Seed("u-lin", "Tasik Varsiti · north bank", 3.1226, 101.6552, SeverityLevel.R2, 42, SuspectedType.BLACK_ODOROUS, 1, TicketStage.DISPATCHED),
+            Seed("u-wang", "Tasik Varsiti · boathouse", 3.1214, 101.6560, SeverityLevel.R3, 57, SuspectedType.BLACK_ODOROUS, 2, TicketStage.VERIFIED),
+            Seed("u-chen", "Cafeteria grease trap · FSKTM", 3.1278, 101.6498, SeverityLevel.R3, 55, SuspectedType.DOMESTIC, 6, TicketStage.TREATING),
+            Seed("u-zhao", "Residential college drain · KK5", 3.1168, 101.6522, SeverityLevel.R2, 36, SuspectedType.DOMESTIC, 9, TicketStage.FILED),
+            Seed("u-wang", "Klang River · Masjid Jamek reach", 3.1490, 101.6960, SeverityLevel.R3, 62, SuspectedType.DOMESTIC, 4, TicketStage.TREATING),
+            Seed("u-zhao", "Sungai Kerayong · Cheras", 3.1250, 101.7180, SeverityLevel.R3, 64, SuspectedType.BLACK_ODOROUS, 5, TicketStage.TREATING),
+            Seed("u-lin", "Gombak River · PWTC reach", 3.1700, 101.6940, SeverityLevel.R4, 74, SuspectedType.INDUSTRIAL, 7, TicketStage.TREATING)
+        )
+        seeds.forEachIndexed { idx, sd -> seedReport(idx, sd, now) }
+    }
+
+    /** 校内部门 + 外部机构（两层受理，规则见 [Campus]） */
+    private fun seedAgencies() {
         // ======= 第一层：UM 校内单位（校内上报的首个受理方）=======
         // 部门名称参照 UM 实际设置，电话为占位值；坐标为校园内示意位置。
         agencies += Agency(
@@ -208,19 +258,6 @@ object DemoRepo {
             tests = listOf("pH", "COD", "Ammoniacal nitrogen", "Total phosphorus", "Dissolved oxygen"),
             materials = listOf("ID document", "Sample ≥ 500 mL, chilled")
         )
-
-        // ======= 他人上报（地图点位 + 工单动态 + 提级演示）=======
-        // 两条 Tasik Varsiti 上报在 72 h 内：演示用户再报一次同一水体 → 3 人印证 → 提级并移交外部机构
-        val seeds = listOf(
-            Seed("u-lin", "Tasik Varsiti · north bank", 3.1226, 101.6552, SeverityLevel.R2, 42, SuspectedType.BLACK_ODOROUS, 1, TicketStage.DISPATCHED),
-            Seed("u-wang", "Tasik Varsiti · boathouse", 3.1214, 101.6560, SeverityLevel.R3, 57, SuspectedType.BLACK_ODOROUS, 2, TicketStage.VERIFIED),
-            Seed("u-chen", "Cafeteria grease trap · FSKTM", 3.1278, 101.6498, SeverityLevel.R3, 55, SuspectedType.DOMESTIC, 6, TicketStage.TREATING),
-            Seed("u-zhao", "Residential college drain · KK5", 3.1168, 101.6522, SeverityLevel.R2, 36, SuspectedType.DOMESTIC, 9, TicketStage.FILED),
-            Seed("u-wang", "Klang River · Masjid Jamek reach", 3.1490, 101.6960, SeverityLevel.R3, 62, SuspectedType.DOMESTIC, 4, TicketStage.TREATING),
-            Seed("u-zhao", "Sungai Kerayong · Cheras", 3.1250, 101.7180, SeverityLevel.R3, 64, SuspectedType.BLACK_ODOROUS, 5, TicketStage.TREATING),
-            Seed("u-lin", "Gombak River · PWTC reach", 3.1700, 101.6940, SeverityLevel.R4, 74, SuspectedType.INDUSTRIAL, 7, TicketStage.TREATING)
-        )
-        seeds.forEachIndexed { idx, sd -> seedReport(idx, sd, now) }
     }
 
     private data class Seed(

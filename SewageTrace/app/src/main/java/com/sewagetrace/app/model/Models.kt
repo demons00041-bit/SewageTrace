@@ -215,6 +215,8 @@ data class Report(
     companion object {
         const val ENGINE_LOCAL = "local"
         const val ENGINE_CLOUD = "cloud"
+        /** 地图上手动新增的标记：没有照片，等级来自人工 */
+        const val ENGINE_MANUAL = "manual"
     }
 }
 

@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -60,5 +61,13 @@ dependencies {
     // 用 OpenGL ES 版而不是默认的 Vulkan 版：模拟器和老机型兼容性更好
     implementation("org.maplibre.gl:android-sdk-opengl:13.7.1")
 
+    // 持久化：Room（SQLite），注解处理走 KSP
+    implementation("androidx.room:room-runtime:2.8.5")
+    ksp("androidx.room:room-compiler:2.8.5")
+
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // 单元测试（JVM）：android.jar 里的 org.json 是空桩，测试要用真实实现
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.json:json:20250517")
 }

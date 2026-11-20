@@ -569,7 +569,7 @@
     <string name="camera_unavailable">本机没有找到可用的相机应用，请改从相册选择照片。</string>
     <string name="capture_failed">照片没有保存成功，请重试一次。</string>
     <string name="waterbody_unnamed">未命名水体</string>
-    <string name="waterbody_hint">例如：巴生河 · 占美清真寺河段</string>
+    <string name="waterbody_hint">例如：Tasik Varsiti · 北岸</string>
     <string name="cloud_add_key">尚未配置联网 AI —— 添加 API 密钥</string>
     <string name="pick_scene">选择拍摄场景</string>
     <string name="pick_scene_sub">仅用于演示：模拟不同水质条件</string>
@@ -699,4 +699,25 @@
     <string name="ticket_referred_to">外部协办</string>
     <string name="ticket_scope_campus">校内</string>
     <string name="ticket_scope_external">校外</string>
+    <!-- 地图标记 CRUD / 持久化 -->
+    <string name="map_long_press_hint">长按地图可新增标记</string>
+    <string name="marker_new_title">新增标记</string>
+    <string name="marker_edit_title">编辑标记</string>
+    <string name="marker_edit">编辑</string>
+    <string name="marker_move">移动</string>
+    <string name="marker_delete">删除</string>
+    <string name="marker_locked">已进入工单：位置属于证据，不能移动或删除。</string>
+    <string name="marker_move_hint">拖动地图，把准星对准新位置</string>
+    <string name="marker_move_confirm">确认位置</string>
+    <string name="marker_delete_title">删除这个标记？</string>
+    <string name="marker_delete_body">删除后无法恢复。</string>
+    <string name="marker_draft">草稿</string>
+    <string name="marker_mine">我的</string>
+    <string name="marker_level_required">选择等级后才能保存</string>
+    <string name="filter_level_all">全部等级</string>
+    <string name="map_show_on_map">在地图上查看</string>
+    <string name="engine_manual">手动标记（无照片）</string>
+    <string name="reset_demo">重置演示数据</string>
+    <string name="reset_demo_body">清空所有上报、工单、预约和注册账号，并重新生成演示数据。录视频前建议执行，否则依赖时间的演示（如多人印证提级）可能失效。</string>
+    <string name="reset_demo_confirm">重置</string>
 </resources>
