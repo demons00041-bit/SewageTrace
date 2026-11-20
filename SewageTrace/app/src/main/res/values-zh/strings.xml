@@ -260,7 +260,7 @@
     <string name="log_closed">复测结果改善，验收通过，工单关闭。</string>
     <string name="log_dispute">用户提出异议：%1$s。工单已回退至「%2$s」，将安排二次核实。</string>
     <string name="log_urge">该工单进度低于 25% 且连续 7 天无新日志，平台已自动生成催办单并抄送上级部门。</string>
-    <string name="log_escalate">同一水体 1 公里内 72 小时内被 %1$d 位不同用户独立报告，工单自动提级并优先分派。</string>
+    <string name="log_escalate">同一水体附近 72 小时内被 %1$s 位不同用户独立报告，工单自动提级并优先分派。</string>
     <string name="role_platform">平台</string>
     <string name="role_authority">主管部门</string>
     <string name="role_operator">治理单位</string>
@@ -306,13 +306,13 @@
     <string name="scene_heavy_sub">岸边暗管持续排放的黑色水体</string>
     <string name="scene_heavy_note">水体呈深黑色并带灰白色泡沫，岸边可见排出管道。</string>
     <string name="scene_moderate_title">中度污染 · 绿藻泡沫</string>
-    <string name="scene_moderate_sub">富营养化导致绿藻与持久泡沫</string>
+    <string name="scene_moderate_sub">校园湖泊 · 富营养化导致绿藻与持久泡沫</string>
     <string name="scene_moderate_note">水面被绿色藻膜覆盖，有大量持久不破的泡沫。</string>
     <string name="scene_mild_title">轻度污染 · 浑浊漂浮物</string>
-    <string name="scene_mild_sub">水质发黄浑浊，夹杂漂浮垃圾</string>
+    <string name="scene_mild_sub">宿舍排水渠 · 水质发黄浑浊，夹杂漂浮垃圾</string>
     <string name="scene_mild_note">水色发黄浑浊，边缘聚积塑料与生活杂物。</string>
     <string name="scene_clean_title">无异常见 · 清透水面</string>
-    <string name="scene_clean_sub">正常的城市河道水面</string>
+    <string name="scene_clean_sub">校园溪流 · 正常的清澈水面</string>
     <string name="scene_clean_note">水面清透，可看到水下结构与倒影。</string>
     <string name="scene_blurred_title">低置信度 · 画面模糊</string>
     <string name="scene_blurred_sub">对焦失败的照片</string>
@@ -354,7 +354,7 @@
     <string name="log_treating_mid">截污管道已完工，正在清淤与生态修复。</string>
     <string name="log_generic">状态更新。</string>
     <string name="log_urged">该工单进度低于 25% 且连续 7 天无新日志，平台已自动生成催办单并抄送上级部门。</string>
-    <string name="log_escalated">同一水体 1 公里内 72 小时内被 %1$d 位不同用户独立报告，工单自动提级并优先分派。</string>
+    <string name="log_escalated">同一水体附近 72 小时内被 %1$s 位不同用户独立报告，工单自动提级并优先分派。</string>
 
     <!-- Rank badges -->
     <string name="badge_river_guardian">河道守护者</string>
@@ -690,4 +690,13 @@
     <string name="map_tiles_failed">底图加载失败（可能处于离线状态），下方列表仍可正常使用。</string>
     <string name="map_retry">重试</string>
     <string name="map_view_details">查看详情</string>
+    <!-- UM 校园两层受理 -->
+    <string name="agency_type_campus">UM 校内职能部门</string>
+    <string name="filter_campus">校内</string>
+    <string name="role_campus_unit">校内部门</string>
+    <string name="log_referred_severe">校内出现 R4 重度污染，已移交 %1$s 协办，校内部门仍为主办方。</string>
+    <string name="log_referred_escalated">多名用户独立印证，校内部门已将工单移交 %1$s 协办。</string>
+    <string name="ticket_referred_to">外部协办</string>
+    <string name="ticket_scope_campus">校内</string>
+    <string name="ticket_scope_external">校外</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.sewagetrace.app.ai
 
+import com.sewagetrace.app.data.Campus
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -35,7 +37,10 @@ enum class DemoScene(
     val titleRes: Int,
     val subtitleRes: Int,
     val prior: ScenePrior,
-    val waterbody: String
+    val waterbody: String,
+    /** 场景所在位置（示意坐标）。校内场景落在 UM 校园范围内，会先由校内部门受理 */
+    val lat: Double = Campus.LAT,
+    val lng: Double = Campus.LNG
 ) {
     HEAVY(
         "heavy", R.string.scene_heavy_title, R.string.scene_heavy_sub,
@@ -43,7 +48,7 @@ enum class DemoScene(
             colorTurbidity = 0.92f, floatables = 0.55f, foamOil = 0.45f, state = 0.85f, eutrophication = 0.15f,
             suspectedType = SuspectedType.INDUSTRIAL, noteRes = "scene_heavy_note"
         ),
-        "Klang River · industrial reach"
+        "Klang River · industrial reach", 3.1430, 101.6930
     ),
     MODERATE(
         "moderate", R.string.scene_moderate_title, R.string.scene_moderate_sub,
@@ -51,7 +56,7 @@ enum class DemoScene(
             colorTurbidity = 0.62f, floatables = 0.30f, foamOil = 0.40f, state = 0.45f, eutrophication = 0.70f,
             suspectedType = SuspectedType.BLACK_ODOROUS, noteRes = "scene_moderate_note"
         ),
-        "Sungai Kerayong · Cheras"
+        "Tasik Varsiti · north bank", 3.1222, 101.6548
     ),
     MILD(
         "mild", R.string.scene_mild_title, R.string.scene_mild_sub,
@@ -59,7 +64,7 @@ enum class DemoScene(
             colorTurbidity = 0.48f, floatables = 0.55f, foamOil = 0.15f, state = 0.30f, eutrophication = 0.20f,
             suspectedType = SuspectedType.DOMESTIC, noteRes = "scene_mild_note"
         ),
-        "Sungai Bunus · Setapak"
+        "Residential college drain · KK12", 3.1178, 101.6508
     ),
     CLEAN(
         "clean", R.string.scene_clean_title, R.string.scene_clean_sub,
@@ -67,7 +72,7 @@ enum class DemoScene(
             colorTurbidity = 0.08f, floatables = 0.05f, foamOil = 0.03f, state = 0.05f, eutrophication = 0.12f,
             suspectedType = SuspectedType.UNKNOWN, noteRes = "scene_clean_note"
         ),
-        "Klang River · Masjid Jamek reach"
+        "Sungai Pantai · UM stretch", 3.1250, 101.6595
     ),
     BLURRED(
         "blurred", R.string.scene_blurred_title, R.string.scene_blurred_sub,
@@ -80,7 +85,7 @@ enum class DemoScene(
     NIGHT(
         "night", R.string.scene_night_title, R.string.scene_night_sub,
         ScenePrior.darkScene().copy(colorTurbidity = 0.55f, state = 0.4f, suspectedType = SuspectedType.DOMESTIC),
-        "Sungai Batu · Jinjang"
+        "Sungai Kerayong · Cheras", 3.1250, 101.7180
     );
 
     companion object {

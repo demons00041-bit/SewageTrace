@@ -289,8 +289,9 @@ class AppViewModel : ViewModel() {
             analysis = a,
             photoPath = p,
             waterbody = name,
-            lat = DEMO_LAT,
-            lng = DEMO_LNG,
+            // 演示场景带自己的示意坐标（校内 / 校外）；真实照片默认用户在校园内
+            lat = s?.lat ?: DEMO_LAT,
+            lng = s?.lng ?: DEMO_LNG,
             note = note,
             autoReport = autoReport,
             manualLevel = manualLevel,
@@ -556,8 +557,9 @@ class AppViewModel : ViewModel() {
 
     companion object {
         /** 演示定位：吉隆坡市政中心附近（真实版本来自 GPS + 逆地理编码） */
-        const val DEMO_LAT = 3.1578
-        const val DEMO_LNG = 101.7118
+        /** 演示用户的当前位置：UM 校园（FSKTM 一带，示意坐标） */
+        const val DEMO_LAT = 3.1272
+        const val DEMO_LNG = 101.6505
     }
 
     // ------------------------------------------------------------ 工单视觉复核

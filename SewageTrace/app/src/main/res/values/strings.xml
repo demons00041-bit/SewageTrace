@@ -261,7 +261,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="log_closed">Re-test shows improvement. Accepted and the ticket is closed.</string>
     <string name="log_dispute">Reporter disagreed: %1$s. The ticket was returned to “%2$s” for a second inspection.</string>
     <string name="log_urge">Progress is below 25% with no update for 7 days, so an automatic reminder was issued and copied to the supervising office.</string>
-    <string name="log_escalate">%1$d different users reported the same water body within 1 km in 72 hours. The ticket was escalated and dispatched with priority.</string>
+    <string name="log_escalate">%1$d different users reported the same water body nearby within 72 hours. The ticket was escalated and dispatched with priority.</string>
     <string name="role_platform">Platform</string>
     <string name="role_authority">Authority</string>
     <string name="role_operator">Works operator</string>
@@ -307,13 +307,13 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="scene_heavy_sub">A black discharge running from a pipe on the bank</string>
     <string name="scene_heavy_note">Water is deep black with greyish-white foam; a discharge pipe is visible on the bank.</string>
     <string name="scene_moderate_title">Moderate · algae and foam</string>
-    <string name="scene_moderate_sub">Green algae mats with persistent foam</string>
+    <string name="scene_moderate_sub">Campus lake · green algae mats with persistent foam</string>
     <string name="scene_moderate_note">Green algal film covers the surface, with dense persistent foam.</string>
     <string name="scene_mild_title">Slight · turbid with debris</string>
-    <string name="scene_mild_sub">Yellowish, turbid water carrying litter</string>
+    <string name="scene_mild_sub">College drain · yellowish, turbid water carrying litter</string>
     <string name="scene_mild_note">Water is yellowish and turbid, with household debris collecting at the edge.</string>
     <string name="scene_clean_title">No obvious pollution · clear surface</string>
-    <string name="scene_clean_sub">An ordinary urban river reach</string>
+    <string name="scene_clean_sub">Campus stream · an ordinary clear reach</string>
     <string name="scene_clean_note">Surface is clear; submerged structure and reflections are visible.</string>
     <string name="scene_blurred_title">Low confidence · out of focus</string>
     <string name="scene_blurred_sub">A photo that failed to focus</string>
@@ -355,7 +355,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="log_treating_mid">Interception pipes completed; dredging and ecological restoration under way.</string>
     <string name="log_generic">Status updated.</string>
     <string name="log_urged">Progress stayed below 25% with no new log for 7 days, so an automatic reminder was raised and copied to the supervising department.</string>
-    <string name="log_escalated">%1$d different users reported the same water body within 1 km in 72 hours, so the ticket was escalated and prioritised.</string>
+    <string name="log_escalated">%1$s different users reported the same water body nearby within 72 hours, so the ticket was escalated and prioritised.</string>
 
     <!-- Rank badges -->
     <string name="badge_river_guardian">River Guardian</string>
@@ -686,4 +686,13 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="map_tiles_failed">Basemap couldn\'t load (are you offline?). The list below still works.</string>
     <string name="map_retry">Retry</string>
     <string name="map_view_details">View details</string>
+    <!-- UM 校园两层受理 -->
+    <string name="agency_type_campus">UM campus unit</string>
+    <string name="filter_campus">Campus</string>
+    <string name="role_campus_unit">Campus unit</string>
+    <string name="log_referred_severe">Severity R4 on campus: the case was referred to %1$s for joint handling. The campus unit remains the lead.</string>
+    <string name="log_referred_escalated">Confirmed by several reporters: the campus unit referred the case to %1$s for joint handling.</string>
+    <string name="ticket_referred_to">Referred to</string>
+    <string name="ticket_scope_campus">On campus</string>
+    <string name="ticket_scope_external">Off campus</string>
 </resources>

@@ -316,6 +316,7 @@ fun TicketDetailScreen(vm: AppViewModel, ticketId: String) {
                     Spacer(Modifier.height(6.dp))
                     ProgressBar(t.progress, color = if (t.progress >= 70) Color(0xFF22C55E) else Water300, showLabel = false)
                     Spacer(Modifier.height(10.dp))
+                    t.referredAgencyName?.let { KV(stringResource(R.string.ticket_referred_to), it) }
                     KV(stringResource(R.string.created_at), DemoRepo.fmtTime(t.createdAt))
                     KV(stringResource(R.string.sla_deadline), DemoRepo.fmtTime(t.slaDeadline))
                     KV(stringResource(R.string.joint_reports), stringResource(R.string.people_count, t.reportCount))

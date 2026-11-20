@@ -26,6 +26,9 @@ object TicketService {
     private const val HOUR = 3_600_000L
     private const val DAY = 86_400_000L
 
+    /** 校内工单施工阶段的执行方（演示名称） */
+    private const val CAMPUS_CREW = "JPPHB maintenance crew"
+
     /** 以当前 locale 取一条资源文本（用于把阶段名嵌进日志插值参数） */
     private fun stringOf(@StringRes id: Int): String = AppContextHolder.ctx.getString(id)
 
@@ -56,11 +59,12 @@ object TicketService {
     fun createTicket(report: Report, user: User, now: Long = System.currentTimeMillis()): Ticket {
         val id = "t-" + now.toString(36)
         val agency = pickAgency(report)
+        val onCampus = Campus.contains(report.lat, report.lng)
         val t = Ticket(
             id = id,
             reportIds = listOf(report.id),
             waterbodyName = report.waterbodyName,
-            region = user.city,
+            region = if (onCampus) Campus.REGION else user.city,
             agencyId = agency?.id,
             agencyName = agency?.name ?: "市级统一受理渠道",
             stage = TicketStage.SUBMITTED,
@@ -79,14 +83,36 @@ object TicketService {
                 textRes = R.string.log_created
             )
         )
+        // 校内的最高等级（R4）不等多人印证，建单即抄送外部机构
+        if (Campus.isCampusAgency(t.agencyId) && report.effectiveLevel == SeverityLevel.R4) {
+            return referExternally(t.id, report, now, R.string.log_referred_severe) ?: t
+        }
         return t
     }
 
-    private fun pickAgency(report: Report): Agency? {
-        val govs = DemoRepo.agencies.filter { it.type == AgencyType.GOVERNMENT }
-        return govs.minByOrNull {
-            (it.lat - report.lat) * (it.lat - report.lat) + (it.lng - report.lng) * (it.lng - report.lng)
-        }
+    /** 首次受理方：校内 → 校内部门；校外 → 外部政府机构（规则在 [Campus]） */
+    private fun pickAgency(report: Report): Agency? = Campus.firstResponder(report.lat, report.lng)
+
+    /**
+     * 校内工单移交外部机构协办：只移交一次，校内部门仍是主办方、进度照常推进。
+     * 返回更新后的工单；已移交或不是校内工单时返回 null。
+     */
+    private fun referExternally(ticketId: String, report: Report, now: Long, @StringRes reasonRes: Int): Ticket? {
+        val t = DemoRepo.ticketOf(ticketId) ?: return null
+        if (!Campus.isCampusAgency(t.agencyId) || t.referredAgencyName != null) return null
+        val ext = Campus.externalReferral(report.lat, report.lng) ?: return null
+        val updated = t.copy(referredAgencyName = ext.name)
+        val i = DemoRepo.tickets.indexOfFirst { it.id == ticketId }
+        if (i >= 0) DemoRepo.tickets[i] = updated
+        DemoRepo.ticketLogs.add(
+            TicketLog(
+                id = "l-$ticketId-${now}-x", ticketId = ticketId, at = now + 1,
+                actorRoleRes = R.string.role_campus_unit, actorName = t.agencyName,
+                stage = t.stage, progressAfter = t.progress,
+                textRes = reasonRes, formatArgs = listOf(ext.name)
+            )
+        )
+        return updated
     }
 
     /** 报告入库后回填 ticketId（报告在 DemoRepo 中保存） */
@@ -143,7 +169,8 @@ object TicketService {
         DemoRepo.ticketLogs.add(
             TicketLog(
                 id = "l-$ticketId-${now}-t", ticketId = ticketId, at = now,
-                actorRoleRes = R.string.role_treatment_org, actorName = "River maintenance unit",
+                actorRoleRes = if (Campus.isCampusAgency(t.agencyId)) R.string.role_campus_unit else R.string.role_treatment_org,
+                actorName = if (Campus.isCampusAgency(t.agencyId)) CAMPUS_CREW else "River maintenance unit",
                 stage = TicketStage.TREATING, progressAfter = progress,
                 textRes = if (current < 1f) R.string.log_treating_mid else R.string.log_treating_done
             )
@@ -155,7 +182,19 @@ object TicketService {
      * 每一阶段的叙述：角色资源 id + 名称 + 文案资源 id（+ 插值参数）。
      * 全部走资源，切换语言后历史日志也会跟着变。
      */
-    private fun narration(stage: TicketStage, t: Ticket): Narration = when (stage) {
+    private fun narration(stage: TicketStage, t: Ticket): Narration {
+        val n = baseNarration(stage, t)
+        if (!Campus.isCampusAgency(t.agencyId)) return n
+        // 校内工单：核实/立项/关闭由校内部门执行，施工由校园维护队伍执行
+        return when (stage) {
+            TicketStage.VERIFIED, TicketStage.FILED, TicketStage.CLOSED ->
+                n.copy(roleRes = R.string.role_campus_unit, actorName = t.agencyName)
+            TicketStage.TREATING -> n.copy(roleRes = R.string.role_campus_unit, actorName = CAMPUS_CREW)
+            else -> n
+        }
+    }
+
+    private fun baseNarration(stage: TicketStage, t: Ticket): Narration = when (stage) {
         TicketStage.POOLED -> Narration(
             R.string.role_platform, "SewageTrace", R.string.log_pooled, emptyList()
         )
@@ -242,11 +281,13 @@ object TicketService {
         return t
     }
 
-    /** 多人印证提级：同一水体 1km/72h 内 ≥3 位不同用户 */
+    /** 多人印证提级：同一水体（校外 1 km / 校内 300 m）72h 内 ≥3 位不同用户 */
     fun escalateIfNeeded(report: Report, now: Long = System.currentTimeMillis()): Boolean {
+        // 校园里水体彼此只隔几百米，1 km 会把湖和宿舍排水渠算成「同一水体」，校内收紧到 300 m
+        val radius = if (Campus.contains(report.lat, report.lng)) 300.0 else 1000.0
         val similar = DemoRepo.reports.filter {
             it.id != report.id &&
-                distMeters(it.lat, it.lng, report.lat, report.lng) <= 1000 &&
+                distMeters(it.lat, it.lng, report.lat, report.lng) <= radius &&
                 now - it.createdAt <= 72 * HOUR &&
                 it.userId != report.userId
         }
@@ -265,6 +306,8 @@ object TicketService {
                         textRes = R.string.log_escalated, formatArgs = listOf(distinctUsers.toString())
                     )
                 )
+                // 校内工单被多人印证 → 移交外部机构协办
+                referExternally(tid, report, now, R.string.log_referred_escalated)
             }
             return true
         }
@@ -293,6 +336,9 @@ object TicketService {
 object RankService {
 
     private const val DAY = 86_400_000L
+
+    /** 校内工单施工阶段的执行方（演示名称） */
+    private const val CAMPUS_CREW = "JPPHB maintenance crew"
 
     /** 是否计入统计：等级≥R2、未被驳回、同水体 1km/24h 未重复 */
     fun countsForRank(report: Report, all: List<Report>): Boolean {

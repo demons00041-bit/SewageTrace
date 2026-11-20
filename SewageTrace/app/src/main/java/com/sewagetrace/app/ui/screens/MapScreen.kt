@@ -61,6 +61,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.sewagetrace.app.R
+import com.sewagetrace.app.data.Campus
 import com.sewagetrace.app.data.DemoRepo
 import com.sewagetrace.app.data.StatsService
 import com.sewagetrace.app.data.TicketService
@@ -141,10 +142,15 @@ fun MapScreen(vm: AppViewModel) {
         m.animateCamera(CameraUpdateFactory.newCameraPosition(pos), MapConfig.ANIM_MS)
     }
 
-    fun fitAll() {
+    /** campusOnly = 只框校园（首次进入）；否则框全部点位（「全览」按钮，含校外机构） */
+    fun fitAll(campusOnly: Boolean = false) {
         val m = map ?: return
-        val pts = agencies.map { LatLng(it.first.lat, it.first.lng) } +
+        val all = agencies.map { LatLng(it.first.lat, it.first.lng) } +
             reports.map { LatLng(it.lat, it.lng) } + me
+        val pts = if (campusOnly) {
+            all.filter { Campus.contains(it.latitude, it.longitude) } +
+                listOf(LatLng(Campus.LAT - RADIUS_DEG, Campus.LNG - RADIUS_DEG), LatLng(Campus.LAT + RADIUS_DEG, Campus.LNG + RADIUS_DEG))
+        } else all
         if (pts.size < 2) { flyTo(me, MapConfig.DEFAULT_ZOOM); return }
         val bounds = LatLngBounds.Builder().includes(pts).build()
         val pad = with(density) { 56.dp.toPx() }.toInt()
@@ -178,6 +184,9 @@ fun MapScreen(vm: AppViewModel) {
         style.getSourceAs<GeoJsonSource>(SRC_ME)?.setGeoJson(
             FeatureCollection.fromFeatures(listOf(Feature.fromGeometry(Point.fromLngLat(me.longitude, me.latitude))))
         )
+        style.getSourceAs<GeoJsonSource>(SRC_CAMPUS)?.setGeoJson(
+            Feature.fromGeometry(circlePolygon(LatLng(Campus.LAT, Campus.LNG), Campus.RADIUS_M, 96))
+        )
         style.getSourceAs<GeoJsonSource>(SRC_ACCURACY)?.setGeoJson(
             Feature.fromGeometry(circlePolygon(me, vm.locationPrecision.toDouble()))
         )
@@ -187,7 +196,7 @@ fun MapScreen(vm: AppViewModel) {
                 listOfNotNull(sel?.let { Feature.fromGeometry(Point.fromLngLat(it.longitude, it.latitude)) })
             )
         )
-        if (!didInitialFit) { didInitialFit = true; fitAll() }
+        if (!didInitialFit) { didInitialFit = true; fitAll(campusOnly = true) }
     }
 
     // 切 2D/3D 时只改倾斜和朝向，保留当前中心与缩放
@@ -268,6 +277,7 @@ fun MapScreen(vm: AppViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 MapChip(stringResource(R.string.filter_all), null, vm.agencyFilter == null) { vm.agencyFilter = null }
+                MapChip(stringResource(R.string.filter_campus), typeColor(AgencyType.CAMPUS), vm.agencyFilter == AgencyType.CAMPUS) { vm.agencyFilter = AgencyType.CAMPUS }
                 MapChip(stringResource(R.string.filter_gov), typeColor(AgencyType.GOVERNMENT), vm.agencyFilter == AgencyType.GOVERNMENT) { vm.agencyFilter = AgencyType.GOVERNMENT }
                 MapChip(stringResource(R.string.filter_lab), typeColor(AgencyType.LAB), vm.agencyFilter == AgencyType.LAB) { vm.agencyFilter = AgencyType.LAB }
                 MapChip(stringResource(R.string.filter_wwtp), typeColor(AgencyType.WWTP), vm.agencyFilter == AgencyType.WWTP) { vm.agencyFilter = AgencyType.WWTP }
@@ -530,6 +540,10 @@ private const val SRC_PINS = "st-pins"
 private const val SRC_ME = "st-me"
 private const val SRC_ACCURACY = "st-accuracy"
 private const val SRC_SELECTED = "st-selected"
+private const val SRC_CAMPUS = "st-campus"
+
+/** 校园围栏半径换算成度（用于首次框选），赤道附近 1° ≈ 111 km */
+private const val RADIUS_DEG = Campus.RADIUS_M / 111_320.0
 private const val LYR_PINS = "st-pins-circle"
 private const val PROP_ID = "id"
 private const val PROP_KIND = "kind"
@@ -580,10 +594,27 @@ private fun loadStyle(m: MapLibreMap, onReady: () -> Unit) {
 
 /** 叠加图层只在样式加载完时建一次；之后只更新 source 数据 */
 private fun addOverlayLayers(style: Style) {
+    style.addSource(GeoJsonSource(SRC_CAMPUS))
     style.addSource(GeoJsonSource(SRC_ACCURACY))
     style.addSource(GeoJsonSource(SRC_PINS))
     style.addSource(GeoJsonSource(SRC_ME))
     style.addSource(GeoJsonSource(SRC_SELECTED))
+
+    // UM 校园范围：淡色填充 + 虚线边界，一眼看出「校内 / 校外」
+    style.addLayer(
+        FillLayer("st-campus-fill", SRC_CAMPUS).withProperties(
+            PropertyFactory.fillColor("#EC4899"),
+            PropertyFactory.fillOpacity(0.05f)
+        )
+    )
+    style.addLayer(
+        LineLayer("st-campus-line", SRC_CAMPUS).withProperties(
+            PropertyFactory.lineColor("#DB2777"),
+            PropertyFactory.lineOpacity(0.7f),
+            PropertyFactory.lineWidth(2f),
+            PropertyFactory.lineDasharray(arrayOf(2f, 2f))
+        )
+    )
 
     // 位置精度圈：半径 = 设置里的定位精度（米），直观说明隐私降级
     style.addLayer(
@@ -696,6 +727,7 @@ private fun Color.hex(): String = String.format("#%06X", 0xFFFFFF and toArgb())
 // ============================================================================
 
 private fun typeColor(t: AgencyType): Color = when (t) {
+    AgencyType.CAMPUS -> Color(0xFFEC4899)
     AgencyType.GOVERNMENT -> Color(0xFF3B82F6)
     AgencyType.LAB -> Color(0xFF10B981)
     AgencyType.WWTP -> Color(0xFF8B5CF6)
@@ -741,6 +773,15 @@ fun AgencyRow(a: Agency, distMeters: Int, onClick: () -> Unit) {
                     stringResource(a.type.labelRes) + " · " + fmtDist(distMeters),
                     fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+            if (Campus.contains(a.lat, a.lng)) {
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(typeColor(AgencyType.CAMPUS).copy(alpha = 0.15f))
+                        .padding(horizontal = 6.dp, vertical = 3.dp)
+                ) { Text(stringResource(R.string.ticket_scope_campus), fontSize = 9.5.sp, color = typeColor(AgencyType.CAMPUS)) }
+                Spacer(Modifier.width(6.dp))
             }
             if (a.type == AgencyType.LAB) {
                 Box(

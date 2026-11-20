@@ -105,7 +105,9 @@ enum class AgencyType(@StringRes val labelRes: Int, val icon: String, val filter
     GOVERNMENT(R.string.agency_type_gov, "🏛", "gov"),
     WWTP(R.string.agency_type_plant, "🏭", "plant"),
     STATION(R.string.agency_type_monitor, "📈", "monitor"),
-    LAB(R.string.agency_type_lab, "🔬", "lab")
+    LAB(R.string.agency_type_lab, "🔬", "lab"),
+    /** UM 校内职能部门（JPPHB、Sustainability Centre、宿舍管理处）：校内上报的第一受理方 */
+    CAMPUS(R.string.agency_type_campus, "🏫", "campus")
 }
 
 enum class TicketStage(@StringRes val labelRes: Int) {
@@ -232,7 +234,9 @@ data class Ticket(
     val escalated: Boolean = false,
     val urged: Boolean = false,
     val disputed: Boolean = false,
-    val thanked: Boolean = false
+    val thanked: Boolean = false,
+    /** 校内工单移交/抄送的外部机构（如 JAS）。null = 未移交 */
+    val referredAgencyName: String? = null
 ) {
     val isOverdue: Boolean get() = System.currentTimeMillis() > slaDeadline && stage != TicketStage.CLOSED
     val overdueDays: Int get() = if (!isOverdue) 0 else ((System.currentTimeMillis() - slaDeadline) / 86_400_000L).toInt().coerceAtLeast(1)
