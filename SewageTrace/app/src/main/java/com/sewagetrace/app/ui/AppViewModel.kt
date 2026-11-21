@@ -29,6 +29,7 @@ import com.sewagetrace.app.model.AgencyType
 import com.sewagetrace.app.model.Booking
 import com.sewagetrace.app.model.LeaderRow
 import com.sewagetrace.app.model.Report
+import com.sewagetrace.app.model.SeverityLevel
 import com.sewagetrace.app.model.Ticket
 import com.sewagetrace.app.model.TicketLog
 import com.sewagetrace.app.model.TicketStage
@@ -147,6 +148,20 @@ class AppViewModel : ViewModel() {
     var waterbody by mutableStateOf("")
     var note by mutableStateOf("")
 
+    /** 人工确认的污水等级；null = 尚未选择，此时不允许提交（需求 CAP-02） */
+    var manualLevel by mutableStateOf<SeverityLevel?>(null)
+
+    fun updateManualLevel(level: SeverityLevel?) {
+        manualLevel = level
+        tick++
+    }
+
+    /** 场景描述（= Report.note），上限 500 字符 */
+    fun updateNote(v: String) {
+        note = v.take(500)
+        tick++
+    }
+
     /** 自动上报开关，持久化到 Settings */
     var autoReport by mutableStateOf(Settings.autoReport)
         private set
@@ -184,7 +199,8 @@ class AppViewModel : ViewModel() {
         scene = s
         photoPath = DemoPhotoFactory.ensure(AppContextHolder.ctx, s)
         waterbody = s.waterbody
-        note = ""
+        // 场景描述跨图片保留（需求 CAP-01d），只重置人工等级
+        manualLevel = null
         phase = DetectPhase.SHOOTING
         tick++
         runAnalysis()
@@ -202,7 +218,8 @@ class AppViewModel : ViewModel() {
         scene = s
         photoPath = path
         waterbody = s.waterbody
-        note = ""
+        // 场景描述跨图片保留（需求 CAP-01d），只重置人工等级
+        manualLevel = null
         phase = DetectPhase.SHOOTING
         tick++
         runAnalysis()
@@ -223,7 +240,7 @@ class AppViewModel : ViewModel() {
         scene = null
         photoPath = path
         waterbody = ""
-        note = ""
+        manualLevel = null
         phase = DetectPhase.SHOOTING
         tick++
         runAnalysis()
@@ -261,6 +278,7 @@ class AppViewModel : ViewModel() {
     fun submit() {
         val a = analysis ?: return
         val p = photoPath ?: return
+        manualLevel ?: return   // 未选等级不提交（按钮侧已禁用）
         val s = scene
         // 真实照片没有场景默认水体名，留空则用"未命名水体"
         val name = waterbody.ifBlank {
@@ -271,10 +289,12 @@ class AppViewModel : ViewModel() {
             analysis = a,
             photoPath = p,
             waterbody = name,
-            lat = DEMO_LAT,
-            lng = DEMO_LNG,
+            // 演示场景带自己的示意坐标（校内 / 校外）；真实照片默认用户在校园内
+            lat = s?.lat ?: DEMO_LAT,
+            lng = s?.lng ?: DEMO_LNG,
             note = note,
             autoReport = autoReport,
+            manualLevel = manualLevel,
             locationPrecision = locationPrecision
         )
         outcome = res
@@ -290,8 +310,9 @@ class AppViewModel : ViewModel() {
         analysis = null
         outcome = null
         fallback = null
-        note = ""
         waterbody = ""
+        note = ""          // 重拍 = 新一轮采集，描述与等级一并清空
+        manualLevel = null
         analyzing = false
         analyzingProgress = 0
         tick++
@@ -441,6 +462,24 @@ class AppViewModel : ViewModel() {
     var selectedAgencyId by mutableStateOf<String?>("lab-001")
     var showReportsOnMap by mutableStateOf(true)
 
+    /** 地图按污染等级筛选（MAP-03b）；null = 全部等级。只作用于上报点位，不影响机构 */
+    var levelFilter by mutableStateOf<SeverityLevel?>(null)
+
+    /** 从记录详情跳到地图时要聚焦的记录（MAP-02c），地图消费后清空 */
+    var mapFocusReportId by mutableStateOf<String?>(null)
+
+    fun showOnMap(reportId: String) {
+        mapFocusReportId = reportId
+        home(Tab.MAP)
+    }
+
+    /** 重置演示数据（个人页 → 设置）。录视频前用，见 DemoRepo.resetDemo */
+    fun resetDemoData() {
+        DemoRepo.resetDemo()
+        if (DemoRepo.currentUser() == null) screen = Screen.Auth
+        tick++
+    }
+
     fun agencies(): List<Pair<Agency, Int>> = StatsService.agencies(agencyFilter, DEMO_LAT, DEMO_LNG)
 
     fun agency(id: String): Agency? = DemoRepo.agencies.firstOrNull { it.id == id }
@@ -536,8 +575,9 @@ class AppViewModel : ViewModel() {
 
     companion object {
         /** 演示定位：吉隆坡市政中心附近（真实版本来自 GPS + 逆地理编码） */
-        const val DEMO_LAT = 3.1578
-        const val DEMO_LNG = 101.7118
+        /** 演示用户的当前位置：UM 校园（FSKTM 一带，示意坐标） */
+        const val DEMO_LAT = 3.1272
+        const val DEMO_LNG = 101.6505
     }
 
     // ------------------------------------------------------------ 工单视觉复核

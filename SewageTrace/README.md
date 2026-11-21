@@ -62,7 +62,7 @@ gradlew.bat :app:assembleDebug
 | Tab | 做什么 |
 |---|---|
 | **识别污水** Report | 拍照（真实相机/相册）→ 识别 → 污染指数 + 等级 + 置信度 → 确认上报 |
-| **地图** Map | 示意地图 + 机构筛选 + 机构详情 + 预约线下送检 |
+| **地图** Map | MapLibre 矢量地图 + 机构/等级筛选 + 标记增删改查 + 机构详情 + 预约线下送检 |
 | **社区** Community | 同城/全国排行榜 + 我的工单治理进度 + 全平台动态 |
 | **我的** Me | 资料、数据统计、上报记录、我的预约、设置 |
 
@@ -122,7 +122,7 @@ SewageTrace/
 │  │  │  └─ DemoPhotoFactory.kt     Canvas 合成演示照片（演示场景用）
 │  │  │
 │  │  ├─ data/
-│  │  │  ├─ DemoRepo.kt             全局仓库（SharedPreferences 持久化）
+│  │  │  ├─ DemoRepo.kt             全局仓库（列表自动落库到 Room，见 data/db/）
 │  │  │  ├─ ReportFlow.kt           上报流程：置信度拦截、去重、日限
 │  │  │  ├─ TicketService.kt        工单状态机、进度计算、提级规则、排行榜计分
 │  │  │  ├─ Settings.kt             设置读写（语言/引擎/密钥/精度）
@@ -238,7 +238,7 @@ res/values-zh/strings.xml   中文
 
 | 项目 | Demo 现状 | 正式版应该 |
 |---|---|---|
-| 地图 | Canvas 手绘示意底图 | 真实 OSM / Google 瓦片 |
+| 地图 | MapLibre + OpenFreeMap 真实矢量地图（2D/3D 切换、底部面板），离线时只剩列表 | 离线瓦片包；机构点位换成真实名录 |
 | 机构数据 | `assets/agencies.json` 虚构名称 | 政府公布的机构名录 |
 | 后端 | 无，全部本地 | 需要真实 API + 鉴权 |
 | 上报 | 只写本地工单 | 对接政务系统 / 12345 |
@@ -246,7 +246,7 @@ res/values-zh/strings.xml   中文
 | 照片 | 系统相机实拍 / 相册导入 | CameraX + EXIF |
 | 账号 | Google 账号选择框 + 校邮箱格式校验 | 真实 Google OAuth + 学校 SSO 验证 |
 | 识别校准 | 未做 | 用实测报告做校准数据集 |
-| 数据持久化 | SharedPreferences，重装即清空 | 数据库 + 云端同步 |
+| 数据持久化 | Room 本地数据库，重装即清空 | 云端同步 |
 
 **法律定位**：这是线索收集与可视化工具，不是法定检测机构，也不是官方举报渠道。
 真实场景下应引导用户走 12345 / 12369，处理结论以主管部门为准。

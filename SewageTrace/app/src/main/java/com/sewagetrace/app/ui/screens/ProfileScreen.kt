@@ -33,6 +33,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -367,6 +371,28 @@ fun ProfileScreen(vm: AppViewModel) {
         }
 
         Spacer(Modifier.height(16.dp))
+        var confirmReset by remember { mutableStateOf(false) }
+        OutlinedButton(
+            onClick = { confirmReset = true },
+            modifier = Modifier.fillMaxWidth().height(46.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) { Text(stringResource(R.string.reset_demo), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        if (confirmReset) {
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { confirmReset = false },
+                title = { Text(stringResource(R.string.reset_demo)) },
+                text = { Text(stringResource(R.string.reset_demo_body)) },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(onClick = { confirmReset = false; vm.resetDemoData() }) {
+                        Text(stringResource(R.string.reset_demo_confirm))
+                    }
+                },
+                dismissButton = {
+                    androidx.compose.material3.TextButton(onClick = { confirmReset = false }) { Text(stringResource(R.string.cancel)) }
+                }
+            )
+        }
+        Spacer(Modifier.height(10.dp))
         OutlinedButton(
             onClick = { vm.logout() },
             modifier = Modifier.fillMaxWidth().height(46.dp),

@@ -129,7 +129,7 @@
     <string name="filter_plant">污水厂</string>
     <string name="filter_monitor">监测站</string>
     <string name="map_offline">底图不可用，当前显示示意地图。</string>
-    <string name="map_attribution">© OpenStreetMap 贡献者</string>
+    <string name="map_attribution">© OpenFreeMap © OpenMapTiles © OpenStreetMap 贡献者</string>
     <string name="map_legend">图例</string>
     <string name="nearby">附近</string>
     <string name="distance_m">%1$d 米</string>
@@ -260,7 +260,7 @@
     <string name="log_closed">复测结果改善，验收通过，工单关闭。</string>
     <string name="log_dispute">用户提出异议：%1$s。工单已回退至「%2$s」，将安排二次核实。</string>
     <string name="log_urge">该工单进度低于 25% 且连续 7 天无新日志，平台已自动生成催办单并抄送上级部门。</string>
-    <string name="log_escalate">同一水体 1 公里内 72 小时内被 %1$d 位不同用户独立报告，工单自动提级并优先分派。</string>
+    <string name="log_escalate">同一水体附近 72 小时内被 %1$s 位不同用户独立报告，工单自动提级并优先分派。</string>
     <string name="role_platform">平台</string>
     <string name="role_authority">主管部门</string>
     <string name="role_operator">治理单位</string>
@@ -306,13 +306,13 @@
     <string name="scene_heavy_sub">岸边暗管持续排放的黑色水体</string>
     <string name="scene_heavy_note">水体呈深黑色并带灰白色泡沫，岸边可见排出管道。</string>
     <string name="scene_moderate_title">中度污染 · 绿藻泡沫</string>
-    <string name="scene_moderate_sub">富营养化导致绿藻与持久泡沫</string>
+    <string name="scene_moderate_sub">校园湖泊 · 富营养化导致绿藻与持久泡沫</string>
     <string name="scene_moderate_note">水面被绿色藻膜覆盖，有大量持久不破的泡沫。</string>
     <string name="scene_mild_title">轻度污染 · 浑浊漂浮物</string>
-    <string name="scene_mild_sub">水质发黄浑浊，夹杂漂浮垃圾</string>
+    <string name="scene_mild_sub">宿舍排水渠 · 水质发黄浑浊，夹杂漂浮垃圾</string>
     <string name="scene_mild_note">水色发黄浑浊，边缘聚积塑料与生活杂物。</string>
     <string name="scene_clean_title">无异常见 · 清透水面</string>
-    <string name="scene_clean_sub">正常的城市河道水面</string>
+    <string name="scene_clean_sub">校园溪流 · 正常的清澈水面</string>
     <string name="scene_clean_note">水面清透，可看到水下结构与倒影。</string>
     <string name="scene_blurred_title">低置信度 · 画面模糊</string>
     <string name="scene_blurred_sub">对焦失败的照片</string>
@@ -354,7 +354,7 @@
     <string name="log_treating_mid">截污管道已完工，正在清淤与生态修复。</string>
     <string name="log_generic">状态更新。</string>
     <string name="log_urged">该工单进度低于 25% 且连续 7 天无新日志，平台已自动生成催办单并抄送上级部门。</string>
-    <string name="log_escalated">同一水体 1 公里内 72 小时内被 %1$d 位不同用户独立报告，工单自动提级并优先分派。</string>
+    <string name="log_escalated">同一水体附近 72 小时内被 %1$s 位不同用户独立报告，工单自动提级并优先分派。</string>
 
     <!-- Rank badges -->
     <string name="badge_river_guardian">河道守护者</string>
@@ -569,7 +569,7 @@
     <string name="camera_unavailable">本机没有找到可用的相机应用，请改从相册选择照片。</string>
     <string name="capture_failed">照片没有保存成功，请重试一次。</string>
     <string name="waterbody_unnamed">未命名水体</string>
-    <string name="waterbody_hint">例如：巴生河 · 占美清真寺河段</string>
+    <string name="waterbody_hint">例如：Tasik Varsiti · 北岸</string>
     <string name="cloud_add_key">尚未配置联网 AI —— 添加 API 密钥</string>
     <string name="pick_scene">选择拍摄场景</string>
     <string name="pick_scene_sub">仅用于演示：模拟不同水质条件</string>
@@ -661,4 +661,63 @@
     <string name="err_duplicate">24 小时内已上报过：%1$s</string>
     <string name="err_record_missing">该记录已不存在</string>
     <string name="err_already_reported">该记录已上报</string>
+
+    <!-- ===== 场景描述 + 人工等级（需求 CAP-01 / CAP-02） ===== -->
+    <string name="scene_desc_label">场景描述</string>
+    <string name="optional_tag">选填</string>
+    <string name="clear">清空</string>
+    <string name="scene_desc_hint">请描述拍摄场景，如：河道岸边、雨后排水口、工业区沉淀池、水面漂浮物情况等</string>
+    <string name="scene_desc_counter">%1$d/%2$d</string>
+    <string name="manual_level_label">污水等级</string>
+    <string name="ai_suggestion">AI 建议：%1$s</string>
+    <string name="manual_level_required">提交前请选择污水等级</string>
+    <string name="mlv_r0">未见</string>
+    <string name="mlv_r1">轻微</string>
+    <string name="mlv_r2">中度</string>
+    <string name="mlv_r3">重度</string>
+    <string name="mlv_r4">严重</string>
+
+    <string name="manual_level_row">人工等级</string>
+    <string name="ai_level_row">AI 等级</string>
+    <string name="level_ungraded">未分级</string>
+    <string name="level_mismatch_title">人工等级与 AI 判定不一致</string>
+    <string name="level_mismatch_note">两个等级都会保留以便追溯。上报路由取两者中更严重的一档，因此人工上调不会被忽略。</string>
+    <!-- 地图：MapLibre 版 -->
+    <string name="map_switch_2d">切换到 2D</string>
+    <string name="map_switch_3d">切换到 3D</string>
+    <string name="map_full_view">全览</string>
+    <string name="map_my_location">我的位置</string>
+    <string name="map_tiles_failed">底图加载失败（可能处于离线状态），下方列表仍可正常使用。</string>
+    <string name="map_retry">重试</string>
+    <string name="map_view_details">查看详情</string>
+    <!-- UM 校园两层受理 -->
+    <string name="agency_type_campus">UM 校内职能部门</string>
+    <string name="filter_campus">校内</string>
+    <string name="role_campus_unit">校内部门</string>
+    <string name="log_referred_severe">校内出现 R4 重度污染，已移交 %1$s 协办，校内部门仍为主办方。</string>
+    <string name="log_referred_escalated">多名用户独立印证，校内部门已将工单移交 %1$s 协办。</string>
+    <string name="ticket_referred_to">外部协办</string>
+    <string name="ticket_scope_campus">校内</string>
+    <string name="ticket_scope_external">校外</string>
+    <!-- 地图标记 CRUD / 持久化 -->
+    <string name="map_long_press_hint">长按地图可新增标记</string>
+    <string name="marker_new_title">新增标记</string>
+    <string name="marker_edit_title">编辑标记</string>
+    <string name="marker_edit">编辑</string>
+    <string name="marker_move">移动</string>
+    <string name="marker_delete">删除</string>
+    <string name="marker_locked">已进入工单：位置属于证据，不能移动或删除。</string>
+    <string name="marker_move_hint">拖动地图，把准星对准新位置</string>
+    <string name="marker_move_confirm">确认位置</string>
+    <string name="marker_delete_title">删除这个标记？</string>
+    <string name="marker_delete_body">删除后无法恢复。</string>
+    <string name="marker_draft">草稿</string>
+    <string name="marker_mine">我的</string>
+    <string name="marker_level_required">选择等级后才能保存</string>
+    <string name="filter_level_all">全部等级</string>
+    <string name="map_show_on_map">在地图上查看</string>
+    <string name="engine_manual">手动标记（无照片）</string>
+    <string name="reset_demo">重置演示数据</string>
+    <string name="reset_demo_body">清空所有上报、工单、预约和注册账号，并重新生成演示数据。录视频前建议执行，否则依赖时间的演示（如多人印证提级）可能失效。</string>
+    <string name="reset_demo_confirm">重置</string>
 </resources>

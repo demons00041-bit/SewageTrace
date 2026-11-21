@@ -130,7 +130,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="filter_plant">Treatment works</string>
     <string name="filter_monitor">Monitoring</string>
     <string name="map_offline">Basemap unavailable — showing schematic map.</string>
-    <string name="map_attribution">© OpenStreetMap contributors</string>
+    <string name="map_attribution">© OpenFreeMap © OpenMapTiles © OpenStreetMap contributors</string>
     <string name="map_legend">Legend</string>
     <string name="nearby">Nearby</string>
     <string name="distance_m">%1$d m</string>
@@ -261,7 +261,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="log_closed">Re-test shows improvement. Accepted and the ticket is closed.</string>
     <string name="log_dispute">Reporter disagreed: %1$s. The ticket was returned to “%2$s” for a second inspection.</string>
     <string name="log_urge">Progress is below 25% with no update for 7 days, so an automatic reminder was issued and copied to the supervising office.</string>
-    <string name="log_escalate">%1$d different users reported the same water body within 1 km in 72 hours. The ticket was escalated and dispatched with priority.</string>
+    <string name="log_escalate">%1$d different users reported the same water body nearby within 72 hours. The ticket was escalated and dispatched with priority.</string>
     <string name="role_platform">Platform</string>
     <string name="role_authority">Authority</string>
     <string name="role_operator">Works operator</string>
@@ -307,13 +307,13 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="scene_heavy_sub">A black discharge running from a pipe on the bank</string>
     <string name="scene_heavy_note">Water is deep black with greyish-white foam; a discharge pipe is visible on the bank.</string>
     <string name="scene_moderate_title">Moderate · algae and foam</string>
-    <string name="scene_moderate_sub">Green algae mats with persistent foam</string>
+    <string name="scene_moderate_sub">Campus lake · green algae mats with persistent foam</string>
     <string name="scene_moderate_note">Green algal film covers the surface, with dense persistent foam.</string>
     <string name="scene_mild_title">Slight · turbid with debris</string>
-    <string name="scene_mild_sub">Yellowish, turbid water carrying litter</string>
+    <string name="scene_mild_sub">College drain · yellowish, turbid water carrying litter</string>
     <string name="scene_mild_note">Water is yellowish and turbid, with household debris collecting at the edge.</string>
     <string name="scene_clean_title">No obvious pollution · clear surface</string>
-    <string name="scene_clean_sub">An ordinary urban river reach</string>
+    <string name="scene_clean_sub">Campus stream · an ordinary clear reach</string>
     <string name="scene_clean_note">Surface is clear; submerged structure and reflections are visible.</string>
     <string name="scene_blurred_title">Low confidence · out of focus</string>
     <string name="scene_blurred_sub">A photo that failed to focus</string>
@@ -355,7 +355,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="log_treating_mid">Interception pipes completed; dredging and ecological restoration under way.</string>
     <string name="log_generic">Status updated.</string>
     <string name="log_urged">Progress stayed below 25% with no new log for 7 days, so an automatic reminder was raised and copied to the supervising department.</string>
-    <string name="log_escalated">%1$d different users reported the same water body within 1 km in 72 hours, so the ticket was escalated and prioritised.</string>
+    <string name="log_escalated">%1$s different users reported the same water body nearby within 72 hours, so the ticket was escalated and prioritised.</string>
 
     <!-- Rank badges -->
     <string name="badge_river_guardian">River Guardian</string>
@@ -502,7 +502,7 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="camera_unavailable">No camera app found on this device. Pick a photo from the gallery instead.</string>
     <string name="capture_failed">The photo was not saved. Please try again.</string>
     <string name="waterbody_unnamed">Unnamed water body</string>
-    <string name="waterbody_hint">e.g. Klang River · Masjid Jamek reach</string>
+    <string name="waterbody_hint">e.g. Tasik Varsiti · north bank</string>
     <string name="cloud_add_key">Cloud AI is not configured yet — add an API key</string>
     <string name="pick_scene">Pick a capture scene</string>
     <string name="pick_scene_sub">Demo only: simulates different water conditions</string>
@@ -657,4 +657,63 @@ Automatic reports create a record in this system; routing and handling times are
     <string name="err_duplicate">Already reported within 24 hours: %1$s</string>
     <string name="err_record_missing">That record no longer exists</string>
     <string name="err_already_reported">This record has already been reported</string>
+
+    <!-- ===== 场景描述 + 人工等级（需求 CAP-01 / CAP-02） ===== -->
+    <string name="scene_desc_label">Scene description</string>
+    <string name="optional_tag">optional</string>
+    <string name="clear">Clear</string>
+    <string name="scene_desc_hint">Describe the scene: river bank, drain outlet after rain, industrial settling pond, floating debris, etc.</string>
+    <string name="scene_desc_counter">%1$d/%2$d</string>
+    <string name="manual_level_label">Sewage level</string>
+    <string name="ai_suggestion">AI suggests %1$s</string>
+    <string name="manual_level_required">Select a level before submitting</string>
+    <string name="mlv_r0">None</string>
+    <string name="mlv_r1">Slight</string>
+    <string name="mlv_r2">Moderate</string>
+    <string name="mlv_r3">Heavy</string>
+    <string name="mlv_r4">Severe</string>
+
+    <string name="manual_level_row">Manual level</string>
+    <string name="ai_level_row">AI level</string>
+    <string name="level_ungraded">Not graded</string>
+    <string name="level_mismatch_title">Manual level differs from the AI result</string>
+    <string name="level_mismatch_note">Both levels are kept for traceability. Routing follows the more severe of the two, so a manual upgrade can never be lost.</string>
+    <!-- 地图：MapLibre 版 -->
+    <string name="map_switch_2d">Switch to 2D</string>
+    <string name="map_switch_3d">Switch to 3D</string>
+    <string name="map_full_view">Show everything</string>
+    <string name="map_my_location">My location</string>
+    <string name="map_tiles_failed">Basemap couldn\'t load (are you offline?). The list below still works.</string>
+    <string name="map_retry">Retry</string>
+    <string name="map_view_details">View details</string>
+    <!-- UM 校园两层受理 -->
+    <string name="agency_type_campus">UM campus unit</string>
+    <string name="filter_campus">Campus</string>
+    <string name="role_campus_unit">Campus unit</string>
+    <string name="log_referred_severe">Severity R4 on campus: the case was referred to %1$s for joint handling. The campus unit remains the lead.</string>
+    <string name="log_referred_escalated">Confirmed by several reporters: the campus unit referred the case to %1$s for joint handling.</string>
+    <string name="ticket_referred_to">Referred to</string>
+    <string name="ticket_scope_campus">On campus</string>
+    <string name="ticket_scope_external">Off campus</string>
+    <!-- 地图标记 CRUD / 持久化 -->
+    <string name="map_long_press_hint">Long-press the map to add a marker</string>
+    <string name="marker_new_title">New marker</string>
+    <string name="marker_edit_title">Edit marker</string>
+    <string name="marker_edit">Edit</string>
+    <string name="marker_move">Move</string>
+    <string name="marker_delete">Delete</string>
+    <string name="marker_locked">Already in a ticket: the location is evidence, so it can\'t be moved or deleted.</string>
+    <string name="marker_move_hint">Pan the map to put the crosshair on the new spot</string>
+    <string name="marker_move_confirm">Confirm location</string>
+    <string name="marker_delete_title">Delete this marker?</string>
+    <string name="marker_delete_body">This can\'t be undone.</string>
+    <string name="marker_draft">Draft</string>
+    <string name="marker_mine">Mine</string>
+    <string name="marker_level_required">Choose a level to save</string>
+    <string name="filter_level_all">All levels</string>
+    <string name="map_show_on_map">Show on map</string>
+    <string name="engine_manual">Manual marker (no photo)</string>
+    <string name="reset_demo">Reset demo data</string>
+    <string name="reset_demo_body">Clears all reports, tickets, bookings and registered accounts, then regenerates the demo set. Do this before recording so the time-based demos (e.g. escalation) work.</string>
+    <string name="reset_demo_confirm">Reset</string>
 </resources>

@@ -35,6 +35,12 @@ import com.sewagetrace.app.ui.theme.SewageTraceTheme
  */
 class MainActivity : AppCompatActivity() {
 
+    /** 退到后台立即落库：被系统回收前把最后几次修改写进数据库 */
+    override fun onStop() {
+        super.onStop()
+        com.sewagetrace.app.data.db.Store.flushNow()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

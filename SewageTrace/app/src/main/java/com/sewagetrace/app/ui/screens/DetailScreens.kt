@@ -52,6 +52,7 @@ import com.sewagetrace.app.ui.components.Divider2
 import com.sewagetrace.app.ui.components.KV
 import com.sewagetrace.app.ui.components.ProgressBar
 import com.sewagetrace.app.ui.components.SectionTitle
+import com.sewagetrace.app.ui.components.levelName
 import com.sewagetrace.app.ui.theme.Water300
 import com.sewagetrace.app.ui.theme.Water700
 
@@ -105,9 +106,19 @@ fun ReportResultScreen(vm: AppViewModel, reportId: String) {
 
             ResultCard(
                 r.index, r.level, r.confidence, stringResource(r.suspectedType.labelRes),
-                if (r.engine == com.sewagetrace.app.model.Report.ENGINE_CLOUD)
-                    vm.cloudEngineName else vm.localEngineName
+                when (r.engine) {
+                    com.sewagetrace.app.model.Report.ENGINE_CLOUD -> vm.cloudEngineName
+                    com.sewagetrace.app.model.Report.ENGINE_MANUAL -> stringResource(R.string.engine_manual)
+                    else -> vm.localEngineName
+                }
             )
+            Spacer(Modifier.height(10.dp))
+            // MAP-02c：跳到地图并聚焦这条记录
+            androidx.compose.material3.OutlinedButton(
+                onClick = { vm.showOnMap(r.id) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) { Text(stringResource(R.string.map_show_on_map), fontSize = 13.sp) }
             Spacer(Modifier.height(12.dp))
 
             CardBox {
@@ -144,7 +155,36 @@ fun ReportResultScreen(vm: AppViewModel, reportId: String) {
                         stringResource(R.string.confidence_label),
                         stringResource(r.confidence.labelRes) + " · " + stringResource(r.confidence.descRes)
                     )
-                    if (r.note.isNotBlank()) KV(stringResource(R.string.extra_note), r.note)
+                    // 需求 CAP-02f：人工等级与 AI 等级并列展示，便于复核
+                    KV(
+                        stringResource(R.string.manual_level_row),
+                        r.manualLevel?.let { it.code + " " + levelName(it) }
+                            ?: stringResource(R.string.level_ungraded)
+                    )
+                    KV(
+                        stringResource(R.string.ai_level_row),
+                        r.aiLevel.code + " " + levelName(r.aiLevel)
+                    )
+                    if (r.note.isNotBlank()) KV(stringResource(R.string.scene_desc_label), r.note)
+                }
+            }
+
+            // 人工与 AI 不一致时高亮，提示复核
+            if (r.levelMismatch) {
+                Spacer(Modifier.height(10.dp))
+                CardBox(container = Color(0xFFF59E0B).copy(alpha = 0.10f)) {
+                    Column(Modifier.padding(13.dp)) {
+                        Text(
+                            stringResource(R.string.level_mismatch_title),
+                            fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFFB45309)
+                        )
+                        Spacer(Modifier.height(3.dp))
+                        Text(
+                            stringResource(R.string.level_mismatch_note),
+                            fontSize = 10.5.sp, lineHeight = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 
@@ -286,6 +326,7 @@ fun TicketDetailScreen(vm: AppViewModel, ticketId: String) {
                     Spacer(Modifier.height(6.dp))
                     ProgressBar(t.progress, color = if (t.progress >= 70) Color(0xFF22C55E) else Water300, showLabel = false)
                     Spacer(Modifier.height(10.dp))
+                    t.referredAgencyName?.let { KV(stringResource(R.string.ticket_referred_to), it) }
                     KV(stringResource(R.string.created_at), DemoRepo.fmtTime(t.createdAt))
                     KV(stringResource(R.string.sla_deadline), DemoRepo.fmtTime(t.slaDeadline))
                     KV(stringResource(R.string.joint_reports), stringResource(R.string.people_count, t.reportCount))

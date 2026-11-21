@@ -2,6 +2,8 @@ package com.sewagetrace.app.data
 
 import android.content.Context
 import com.sewagetrace.app.R
+import com.sewagetrace.app.data.db.PersistentList
+import com.sewagetrace.app.data.db.Store
 import com.sewagetrace.app.model.Agency
 import com.sewagetrace.app.model.AgencyType
 import com.sewagetrace.app.model.Booking
@@ -23,8 +25,9 @@ import java.util.Locale
 /**
  * 本地数据仓库（演示版，单机）。
  *
- * 城市固定为马来西亚吉隆坡；机构、工单、用户全部为演示数据，
- * 机构名称为虚构，不代表任何真实政府部门。
+ * 两层场景：UM 校园（主场景，校内部门先受理）+ 吉隆坡外部机构（校外上报 / 校内移交协办）。
+ * 规则见 [Campus]。机构、工单、用户全部为演示数据；外部机构名称为虚构，
+ * 校内部门名称参照 UM 实际设置但电话、坐标均为占位值。
  * 真实部署时这一层替换为 Firestore/Cloud Functions，UI 与 ViewModel 无需改动。
  */
 object DemoRepo {
@@ -33,12 +36,15 @@ object DemoRepo {
 
     private val prefs by lazy { AppContextHolder.ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE) }
 
-    val users = mutableListOf<User>()
-    val reports = mutableListOf<Report>()
-    val tickets = mutableListOf<Ticket>()
-    val ticketLogs = mutableListOf<TicketLog>()
+    // 这五个列表任何写操作都会自动落库（见 PersistentList / Store），调用方不用关心持久化
+    val users = PersistentList<User> { Store.markDirty(Store.Table.USERS) }
+    val reports = PersistentList<Report> { Store.markDirty(Store.Table.REPORTS) }
+    val tickets = PersistentList<Ticket> { Store.markDirty(Store.Table.TICKETS) }
+    val ticketLogs = PersistentList<TicketLog> { Store.markDirty(Store.Table.LOGS) }
+    val bookings = PersistentList<Booking> { Store.markDirty(Store.Table.BOOKINGS) }
+
+    /** 机构是静态配置：每次启动从代码种子加载，不落库 */
     val agencies = mutableListOf<Agency>()
-    val bookings = mutableListOf<Booking>()
 
     var currentUserId: String? = null
         private set
@@ -55,8 +61,37 @@ object DemoRepo {
 
     fun load(ctx: Context) {
         AppContextHolder.ctx = ctx.applicationContext
-        if (users.isEmpty()) seed()
+        if (agencies.isNotEmpty()) return   // 已加载过
+        seedAgencies()
+        Store.init(ctx, Store.Sources(users, reports, tickets, ticketLogs, bookings))
+        if (Store.isEmpty()) {
+            // 第一次安装：写入演示数据（写列表即落库）
+            seedActivity()
+        } else {
+            val d = Store.load()
+            users.loadSilently(d.users)
+            reports.loadSilently(d.reports)
+            tickets.loadSilently(d.tickets.sortedByDescending { it.createdAt })
+            ticketLogs.loadSilently(d.logs)
+            bookings.loadSilently(d.bookings)
+        }
         restoreSession()
+    }
+
+    /**
+     * 重置演示数据：清空上报、工单、预约和注册用户，重新生成种子。
+     * 录视频前用：种子里「72 小时内的 Tasik Varsiti 上报」是按重置时刻生成的，
+     * 隔几天不重置，多人印证提级就演示不出来。
+     */
+    fun resetDemo() {
+        users.loadSilently(emptyList())
+        reports.loadSilently(emptyList())
+        tickets.loadSilently(emptyList())
+        ticketLogs.loadSilently(emptyList())
+        bookings.loadSilently(emptyList())
+        seedActivity()
+        Store.markAllDirtyAndFlush()
+        if (currentUser() == null) logout()
     }
 
     fun login(userId: String) {
@@ -114,19 +149,69 @@ object DemoRepo {
 
     // ---------------------------------------------------------------- 种子数据
 
-    private fun seed() {
+    private fun seedActivity() {
         val now = System.currentTimeMillis()
         val day = 86_400_000L
-        val hour = 3_600_000L
 
-        // 演示用户（吉隆坡本地昵称）
-        users += User("u-demo", "River Patrol Aunty", "012****0001", "Kuala Lumpur", true, false, now - 200 * day, isDemoUser = true, studentEmail = "s2000001@siswa.um.edu.my")
-        users += User("u-lin", "Aisyah R.", "012****0002", "Kuala Lumpur", true, false, now - 180 * day, isDemoUser = true, studentEmail = "s2000002@siswa.um.edu.my")
-        users += User("u-wang", "KL River Watch", "012****0003", "Petaling Jaya", true, false, now - 150 * day, isDemoUser = true, studentEmail = "s2000003@siswa.um.edu.my")
-        users += User("u-chen", "Tan M. H.", "012****0004", "Kuala Lumpur", true, true, now - 120 * day, isDemoUser = true, studentEmail = "s2000004@siswa.um.edu.my")
-        users += User("u-zhao", "Faizal A.", "012****0005", "Shah Alam", true, false, now - 90 * day, isDemoUser = true, studentEmail = "s2000005@siswa.um.edu.my")
+        // 演示用户：UM 学生与校园社团（邮箱为示意学号）
+        users += User("u-demo", "Green Volunteer · FSKTM", "012****0001", "Kuala Lumpur", true, false, now - 200 * day, isDemoUser = true, studentEmail = "s2000001@siswa.um.edu.my")
+        users += User("u-lin", "Aisyah R. · KK12", "012****0002", "Kuala Lumpur", true, false, now - 180 * day, isDemoUser = true, studentEmail = "s2000002@siswa.um.edu.my")
+        users += User("u-wang", "UM Eco Club", "012****0003", "Kuala Lumpur", true, false, now - 150 * day, isDemoUser = true, studentEmail = "s2000003@siswa.um.edu.my")
+        users += User("u-chen", "Tan M. H. · Engineering", "012****0004", "Kuala Lumpur", true, true, now - 120 * day, isDemoUser = true, studentEmail = "s2000004@siswa.um.edu.my")
+        users += User("u-zhao", "Faizal A. · KK5", "012****0005", "Petaling Jaya", true, false, now - 90 * day, isDemoUser = true, studentEmail = "s2000005@siswa.um.edu.my")
 
-        // ------- 虚构机构（坐标为吉隆坡示意位置，不指向任何真实建筑） -------
+        // ======= 他人上报（地图点位 + 工单动态 + 提级演示）=======
+        // 两条 Tasik Varsiti 上报在 72 h 内：演示用户再报一次同一水体 → 3 人印证 → 提级并移交外部机构
+        val seeds = listOf(
+            Seed("u-lin", "Tasik Varsiti · north bank", 3.1226, 101.6552, SeverityLevel.R2, 42, SuspectedType.BLACK_ODOROUS, 1, TicketStage.DISPATCHED),
+            Seed("u-wang", "Tasik Varsiti · boathouse", 3.1214, 101.6560, SeverityLevel.R3, 57, SuspectedType.BLACK_ODOROUS, 2, TicketStage.VERIFIED),
+            Seed("u-chen", "Cafeteria grease trap · FSKTM", 3.1278, 101.6498, SeverityLevel.R3, 55, SuspectedType.DOMESTIC, 6, TicketStage.TREATING),
+            Seed("u-zhao", "Residential college drain · KK5", 3.1168, 101.6522, SeverityLevel.R2, 36, SuspectedType.DOMESTIC, 9, TicketStage.FILED),
+            Seed("u-wang", "Klang River · Masjid Jamek reach", 3.1490, 101.6960, SeverityLevel.R3, 62, SuspectedType.DOMESTIC, 4, TicketStage.TREATING),
+            Seed("u-zhao", "Sungai Kerayong · Cheras", 3.1250, 101.7180, SeverityLevel.R3, 64, SuspectedType.BLACK_ODOROUS, 5, TicketStage.TREATING),
+            Seed("u-lin", "Gombak River · PWTC reach", 3.1700, 101.6940, SeverityLevel.R4, 74, SuspectedType.INDUSTRIAL, 7, TicketStage.TREATING)
+        )
+        seeds.forEachIndexed { idx, sd -> seedReport(idx, sd, now) }
+    }
+
+    /** 校内部门 + 外部机构（两层受理，规则见 [Campus]） */
+    private fun seedAgencies() {
+        // ======= 第一层：UM 校内单位（校内上报的首个受理方）=======
+        // 部门名称参照 UM 实际设置，电话为占位值；坐标为校园内示意位置。
+        agencies += Agency(
+            id = "um-jpphb", name = "UM Development & Estate Maintenance (JPPHB)",
+            localName = "Jabatan Pembangunan dan Penyelenggaraan Harta Bina",
+            type = AgencyType.CAMPUS, address = "Universiti Malaya, Kuala Lumpur",
+            phone = "03-0000-1001", hours = "Mon–Fri 08:00–17:00 · emergencies 24 h",
+            lat = 3.1216, lng = 101.6562, standardRes = R.string.std_drainage
+        )
+        agencies += Agency(
+            id = "um-sustain", name = "UM Sustainability Centre",
+            localName = "Pusat Kelestarian UM",
+            type = AgencyType.CAMPUS, address = "Universiti Malaya, Kuala Lumpur",
+            phone = "03-0000-1002", hours = "Mon–Fri 08:30–17:00",
+            lat = 3.1230, lng = 101.6528, standardRes = R.string.std_river
+        )
+        agencies += Agency(
+            id = "um-kk-office", name = "Residential College Management Office",
+            localName = "Pejabat Pengurusan Kolej Kediaman",
+            type = AgencyType.CAMPUS, address = "Kolej Kediaman, Universiti Malaya",
+            phone = "03-0000-1003", hours = "Mon–Fri 08:00–17:00 · college office after hours",
+            lat = 3.1176, lng = 101.6500, standardRes = R.string.std_drainage
+        )
+        agencies += Agency(
+            id = "um-lab-sci", name = "Faculty of Science Water Teaching Lab",
+            localName = "Makmal Pengajaran Air, Fakulti Sains",
+            type = AgencyType.LAB, address = "Faculty of Science, Universiti Malaya",
+            phone = "03-0000-1004", hours = "Mon–Fri 09:00–16:00 · by appointment",
+            lat = 3.1238, lng = 101.6575, accredited = false,
+            fee = "Free for UM students (screening only)",
+            tests = listOf("pH", "Turbidity", "Dissolved oxygen", "Ammoniacal nitrogen"),
+            materials = listOf("UM student card", "Sample ≥ 250 mL")
+        )
+
+        // ======= 第二层：外部机构（校外上报直接受理；校内工单需要时移交协办）=======
+        // 虚构名称，坐标为吉隆坡示意位置，不指向任何真实建筑
         agencies += Agency(
             id = "gov-kl-001", name = "KL Federal Environment Agency",
             localName = "Jabatan Alam Sekitar Wilayah",
@@ -173,81 +258,84 @@ object DemoRepo {
             tests = listOf("pH", "COD", "Ammoniacal nitrogen", "Total phosphorus", "Dissolved oxygen"),
             materials = listOf("ID document", "Sample ≥ 500 mL, chilled")
         )
+    }
 
-        // 他人上报的污水点（用于地图聚合与提级演示）
-        val others = listOf(
-            Triple("u-lin", "Klang River · Masjid Jamek reach", 3.1490 to 101.6960),
-            Triple("u-wang", "Gombak River · PWTC reach", 3.1700 to 101.6940),
-            Triple("u-zhao", "Sungai Kerayong · Cheras", 3.1250 to 101.7180),
-            Triple("u-chen", "Sungai Bunus · Setapak", 3.1900 to 101.7100),
-            Triple("u-lin", "Sungai Batu · Jinjang", 3.2100 to 101.6680)
+    private data class Seed(
+        val userId: String,
+        val waterbody: String,
+        val lat: Double,
+        val lng: Double,
+        val level: SeverityLevel,
+        val index: Int,
+        val type: SuspectedType,
+        val daysAgo: Int,
+        val stage: TicketStage
+    )
+
+    /** 一条历史上报 + 对应工单 + 推进到指定阶段为止的日志 */
+    private fun seedReport(idx: Int, sd: Seed, now: Long) {
+        val day = 86_400_000L
+        val hour = 3_600_000L
+        val created = now - sd.daysAgo * day - 3 * hour
+        val onCampus = Campus.contains(sd.lat, sd.lng)
+        val agency = Campus.firstResponder(sd.lat, sd.lng)
+        val agencyName = agency?.name ?: "KL City Enforcement Office"
+
+        val r = Report(
+            id = "r-demo-$idx", userId = sd.userId, waterbodyName = sd.waterbody,
+            lat = sd.lat, lng = sd.lng, precision = 12,
+            capturedAt = created, createdAt = created,
+            level = sd.level, index = sd.index, confidence = Confidence.HIGH,
+            suspectedType = sd.type,
+            evidence = listOf(Evidence(EvidenceDim.COLOR_TURBIDITY, sd.index, sampleKey = "ev_heavy_color")),
+            note = "", photoPath = "",
+            status = ReportStatus.IN_TICKET, ticketId = "t-demo-$idx"
         )
-        others.forEachIndexed { idx, (uid, name, geo) ->
-            val r = Report(
-                id = "r-demo-$idx",
-                userId = uid,
-                waterbodyName = name,
-                lat = geo.first,
-                lng = geo.second,
-                precision = 12,
-                capturedAt = now - (idx + 2) * day,
-                createdAt = now - (idx + 2) * day,
-                level = SeverityLevel.R3,
-                index = 62,
-                confidence = Confidence.HIGH,
-                suspectedType = SuspectedType.DOMESTIC,
-                evidence = listOf(Evidence(EvidenceDim.COLOR_TURBIDITY, 65, sampleKey = "ev_heavy_color")),
-                note = "",
-                photoPath = "",
-                status = ReportStatus.IN_TICKET,
-                ticketId = "t-demo-$idx"
-            )
-            reports += r
-            val t = Ticket(
-                id = "t-demo-$idx",
-                reportIds = listOf(r.id),
-                waterbodyName = name,
-                region = "Kuala Lumpur",
-                agencyId = "gov-kl-002",
-                agencyName = "KL City Enforcement Office",
-                stage = TicketStage.TREATING,
-                progress = 60,
-                createdAt = now - (idx + 2) * day,
-                slaDeadline = now - (idx + 2) * day + 30 * day,
-                reporterUserId = uid,
-                reportCount = 1 + idx
-            )
-            tickets += t
+        reports += r
+
+        // 校内最高等级：建单即抄送外部机构（与 TicketService 规则一致）
+        val referral = if (onCampus && sd.level == SeverityLevel.R4) Campus.externalReferral(sd.lat, sd.lng)?.name else null
+        val order = TicketStage.entries
+        val progress = when (sd.stage) {
+            TicketStage.TREATING -> TicketService.computeProgress(TicketStage.TREATING, 0.4f)
+            else -> TicketService.computeProgress(sd.stage, 1f)
+        }
+        val t = Ticket(
+            id = "t-demo-$idx", reportIds = listOf(r.id), waterbodyName = sd.waterbody,
+            region = if (onCampus) Campus.REGION else "Kuala Lumpur",
+            agencyId = agency?.id, agencyName = agencyName,
+            stage = sd.stage, progress = progress,
+            createdAt = created, slaDeadline = created + 30 * day,
+            reporterUserId = sd.userId, reportCount = 1,
+            referredAgencyName = referral
+        )
+        tickets += t
+
+        val campusRole = R.string.role_campus_unit
+        val steps = listOf(
+            Triple(TicketStage.SUBMITTED, 0L, Triple(R.string.role_platform, R.string.log_submitted, emptyList<String>())),
+            Triple(TicketStage.POOLED, 2 * hour, Triple(R.string.role_platform, R.string.log_pooled, emptyList())),
+            Triple(TicketStage.DISPATCHED, 20 * hour, Triple(R.string.role_platform, R.string.log_dispatched, listOf(agencyName))),
+            Triple(TicketStage.VERIFIED, 2 * day, Triple(if (onCampus) campusRole else R.string.role_authority, R.string.log_verified, emptyList())),
+            Triple(TicketStage.FILED, 4 * day, Triple(if (onCampus) campusRole else R.string.role_authority, R.string.log_filed, emptyList())),
+            Triple(TicketStage.TREATING, 5 * day, Triple(if (onCampus) campusRole else R.string.role_operator, R.string.log_treating, emptyList()))
+        )
+        steps.filter { order.indexOf(it.first) <= order.indexOf(sd.stage) }.forEach { (stage, offset, n) ->
+            // 日志时间不能晚于现在（近期工单的后续阶段时间被压缩）
+            val at = minOf(created + offset, now - hour)
             ticketLogs += TicketLog(
-                id = "l-${t.id}-1", ticketId = t.id, at = t.createdAt,
-                actorRoleRes = R.string.role_platform, actorName = null,
-                stage = TicketStage.SUBMITTED, progressAfter = 0, textRes = R.string.log_submitted
+                id = "l-${t.id}-${stage.name}", ticketId = t.id, at = at,
+                actorRoleRes = n.first, actorName = null,
+                stage = stage, progressAfter = TicketService.computeProgress(stage, if (stage == TicketStage.TREATING) 0.4f else 1f),
+                textRes = n.second, formatArgs = n.third
             )
+        }
+        if (referral != null) {
             ticketLogs += TicketLog(
-                id = "l-${t.id}-2", ticketId = t.id, at = t.createdAt + 2 * hour,
-                actorRoleRes = R.string.role_platform, actorName = null,
-                stage = TicketStage.POOLED, progressAfter = 0, textRes = R.string.log_pooled
-            )
-            ticketLogs += TicketLog(
-                id = "l-${t.id}-3", ticketId = t.id, at = t.createdAt + 20 * hour,
-                actorRoleRes = R.string.role_platform, actorName = null,
-                stage = TicketStage.DISPATCHED, progressAfter = 5,
-                textRes = R.string.log_dispatched, formatArgs = listOf(t.agencyName)
-            )
-            ticketLogs += TicketLog(
-                id = "l-${t.id}-4", ticketId = t.id, at = t.createdAt + 2 * day,
-                actorRoleRes = R.string.role_authority, actorName = null,
-                stage = TicketStage.VERIFIED, progressAfter = 20, textRes = R.string.log_verified
-            )
-            ticketLogs += TicketLog(
-                id = "l-${t.id}-5", ticketId = t.id, at = t.createdAt + 4 * day,
-                actorRoleRes = R.string.role_authority, actorName = null,
-                stage = TicketStage.FILED, progressAfter = 35, textRes = R.string.log_filed
-            )
-            ticketLogs += TicketLog(
-                id = "l-${t.id}-6", ticketId = t.id, at = t.createdAt + 9 * day,
-                actorRoleRes = R.string.role_operator, actorName = null,
-                stage = TicketStage.TREATING, progressAfter = 60, textRes = R.string.log_treating
+                id = "l-${t.id}-ref", ticketId = t.id, at = created + 1,
+                actorRoleRes = campusRole, actorName = null,
+                stage = TicketStage.SUBMITTED, progressAfter = 0,
+                textRes = R.string.log_referred_severe, formatArgs = listOf(referral)
             )
         }
     }

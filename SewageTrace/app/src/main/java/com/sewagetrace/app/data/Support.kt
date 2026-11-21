@@ -44,12 +44,9 @@ enum class AnalysisMode(val key: String, @StringRes val labelRes: Int) {
     }
 }
 
-/** 按城市显示当前热门抓拍场景（吉隆坡优先重度工业段） */
-fun defaultSceneForCity(city: String): DemoScene = when {
-    city.contains("Petaling", ignoreCase = true) -> DemoScene.MODERATE
-    city.contains("Shah Alam", ignoreCase = true) -> DemoScene.MILD
-    else -> DemoScene.HEAVY
-}
+/** 默认推荐的抓拍场景：用户都是 UM 学生，先给校园湖泊（Tasik Varsiti）；校外场景在场景列表里照常可选 */
+@Suppress("UNUSED_PARAMETER")
+fun defaultSceneForCity(city: String): DemoScene = DemoScene.MODERATE
 
 /** 把引擎结果整理成一行"引擎说明"给 UI 用 */
 fun AnalysisResult.engineLabel(): String = when (engine) {
